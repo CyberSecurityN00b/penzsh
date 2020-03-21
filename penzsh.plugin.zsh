@@ -73,6 +73,7 @@ function penzsh() {
 				penzsh_echo "Error: Unknown flag!"
 				;;
 			esac
+			update_current_penzsh_vars
 			;;
 		note)
 			echo "$(date -u +\[%Y-%b-%d\ %T\ UTC\]) > ${@:2}" >> $PENZSH_DIR/.penzsh/notes
