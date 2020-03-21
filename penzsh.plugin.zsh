@@ -88,19 +88,20 @@ function penzsh() {
 			cat -n $PENZSH_DIR/.penzsh/todo
 			;;
 		todone)
-			local TODO_N=$(($3+0))
-			local TODO_TASK=$(sed -n '${TODO_N}p' < $PENZSH_DIR/.penzsh/todos)
-			if ( $TODO_TASK ) ; then
+			local TODO_N=$(($2+0))
+			local TODO_TASK=`sed -n "${TODO_N}p;" $PENZSH_DIR/.penzsh/todo 2>/dev/null`
+			if [ -z "$TODO_TASK" ] ; then
+				penzsh_echo "There aren't that many tasks!"
+			else
 				penzsh_echo "Really complete ${TODO_TASK}?"
-				read -q "REPLY?(Y/N): "
+				read -q "REPLY?(y/n): "
 				echo ""
 				if [ $REPLY = "y" ] ; then
-					penzsh_echo "Todo completed!"
+					sed -i "${TODO_N}d;" $PENZSH_DIR/.penzsh/todo
+					penzsh_echo "Todo removed!"
 				else
 					penzsh_echo "Aborting todo completion!"
 				fi
-			else
-				penzsh_echo "There aren't that many tasks!"
 			fi
 			;;
 		nmap)
