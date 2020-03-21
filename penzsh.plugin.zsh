@@ -112,28 +112,22 @@ function penzsh() {
 		cmds)
 			ls $PENZSH_CMD_DIR
 			;;
-		nmap)
-			mkdir -p $PENZSH_DIR/enum/nmap
-			nmap -p- -sCV -O -A -oA $PENZSH_DIR/enum/nmap/$(date +%Y\\\\%m\\\\%d-%H:%M:%S)-tcpscan $PENZSH_TARGET
-			;;
-		msf)
-			msfdb start
-			read "REPLY?Metasploit Workspace: "
-			local lhost=${$(ip route get 10.10.10.11 | awk '{print $7}'):-0.0.0.0}
-			msfconsole -q -x "workspace -a $REPLY;db_import $PENZSH_DIR/enum/nmap/*.xml;setg RHOST $PENZSH_TARGET;setg RHOSTS $PENZSH_TARGET;use exploit/multi/handler;setg LHOST ${lhost};show options"
-			;;
 		*)
-			echo "Following commands currently supported:"
-			echo -e "\tcmds   - List vailable custom/tool commands"
-			echo -e "\tcreate - Make the current direction a penzsh project"
-			echo -e "\tflag"
-			echo -e "\t\tfreebsd - Flag the target as a FreeBSD machine."
-			echo -e "\t\tlinux   - Flag the target as a Linux machine."
-			echo -e "\t\twindows - Flag the target as a Windows machine."
-			echo -e "\tnote   - Save a note for later"
-			echo -e "\tnotes  - Read your notes for this target"
-			echo -e "\ttodo   - Remind yourself of something"
-			echo -e "\ttodos  - See what you need to do for this target"
+			if [ -f $PENZSH_CMD_DIR/$1 ]; then
+				source $PENZSH_CMD_DIR/$1 ${a:2}
+			else
+				echo "Following commands currently supported:"
+				echo -e "\tcmds   - List vailable custom/tool commands"
+				echo -e "\tcreate - Make the current direction a penzsh project"
+				echo -e "\tflag"
+				echo -e "\t\tfreebsd - Flag the target as a FreeBSD machine."
+				echo -e "\t\tlinux   - Flag the target as a Linux machine."
+				echo -e "\t\twindows - Flag the target as a Windows machine."
+				echo -e "\tnote   - Save a note for later"
+				echo -e "\tnotes  - Read your notes for this target"
+				echo -e "\ttodo   - Remind yourself of something"
+				echo -e "\ttodos  - See what you need to do for this target"
+			fi
 			;;
 		esac
 	else
