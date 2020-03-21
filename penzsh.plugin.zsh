@@ -1,3 +1,6 @@
+## Exports
+export PENZSH_CMD_DIR="${0:h:a}/cmds"
+
 ## Hook function definitions
 function chpwd_update_penzsh_vars() {
 	update_current_penzsh_vars
@@ -28,6 +31,7 @@ alias pz=penzsh
 function update_current_penzsh_vars() {
 	# Are we in a penzsh project?
 	PENZSH=false
+	fc -P
 	local x=`pwd`
 	while [ "$x" != "/" ] ; do
 		if [ `find "$x" -maxdepth 1 -name .penzsh -type d 2>/dev/null` ] ; then
@@ -35,6 +39,7 @@ function update_current_penzsh_vars() {
 			PENZSH_DIR=$x
 			PENZSH_TARGET=$(cat $x/.penzsh/target)
 			PENZSH_OS=$(cat $x/.penzsh/os)
+			fc -p $x/.penzsh/history
 			break
 		fi
 		x=`dirname "$x"`
@@ -104,6 +109,9 @@ function penzsh() {
 				fi
 			fi
 			;;
+		cmds)
+			ls $PENZSH_CMD_DIR
+			;;
 		nmap)
 			mkdir -p $PENZSH_DIR/enum/nmap
 			nmap -p- -sCV -O -A -oA $PENZSH_DIR/enum/nmap/$(date +%Y\\\\%m\\\\%d-%H:%M:%S)-tcpscan $PENZSH_TARGET
@@ -116,7 +124,8 @@ function penzsh() {
 			;;
 		*)
 			echo "Following commands currently supported:"
-			echo -e "\tcreate - make the current direction a penzsh project"
+			echo -e "\tcmds   - List vailable custom/tool commands"
+			echo -e "\tcreate - Make the current direction a penzsh project"
 			echo -e "\tflag"
 			echo -e "\t\tfreebsd - Flag the target as a FreeBSD machine."
 			echo -e "\t\tlinux   - Flag the target as a Linux machine."
@@ -125,10 +134,6 @@ function penzsh() {
 			echo -e "\tnotes  - Read your notes for this target"
 			echo -e "\ttodo   - Remind yourself of something"
 			echo -e "\ttodos  - See what you need to do for this target"
-			echo ""
-			echo "Following tools are supported:"
-			echo -e "\tnmap   - Run nmap against this target"
-			echo -e "\tmsf    - Run msfconsole for this target"
 			;;
 		esac
 	else

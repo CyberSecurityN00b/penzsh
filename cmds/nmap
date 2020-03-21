@@ -1,0 +1,4 @@
+source .core
+
+mkdir -p $__penzshcore_dir_enum/nmap
+nmap -p- -sCV -O -A $__penzshcore_target -oA $__penzshcore_dir_enum/nmap/$(date +%Y\\\\%m\\\\%d-%H:%M:%S)-tcpscan
