@@ -122,8 +122,13 @@ function penzsh() {
 			echo -e "\t\tlinux   - Flag the target as a Linux machine."
 			echo -e "\t\twindows - Flag the target as a Windows machine."
 			echo -e "\tnote   - Save a note for later"
-			echo -e "\ttodo"
-			echo -e "\tnmap"
+			echo -e "\tnotes  - Read your notes for this target"
+			echo -e "\ttodo   - Remind yourself of something"
+			echo -e "\ttodos  - See what you need to do for this target"
+			echo ""
+			echo "Following tools are supported:"
+			echo -e "\tnmap   - Run nmap against this target"
+			echo -e "\tmsf    - Run msfconsole for this target"
 			;;
 		esac
 	else
