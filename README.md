@@ -1,5 +1,5 @@
 # penzsh
-Pentesting Framework for Oh-My-Zsh
+Pentesting Framework for Oh-My-Zsh/PowerLevel10K
 
 ## Installation
 For Oh My Zsh, git clone into $ZSH_CUSTOM/themes/penzsh
