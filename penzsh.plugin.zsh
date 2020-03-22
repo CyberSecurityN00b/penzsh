@@ -1,5 +1,6 @@
 ## Exports
 export PENZSH_CMD_DIR="${0:h:a}/cmds"
+export PENZSH_CUSTCMD_DIR="${0:h:a}/custcmds"
 
 ## Hook function definitions
 function chpwd_update_penzsh_vars() {
@@ -113,7 +114,9 @@ function penzsh() {
 			ls $PENZSH_CMD_DIR
 			;;
 		*)
-			if [ -f $PENZSH_CMD_DIR/$1 ]; then
+			if [ -f $PENZSH_CUSTCMD_DIR/$1 ]; then
+				source $PENZSH_CUSTCMD_DIR/$1 ${a:2}
+			elif [ -f $PENZSH_CMD_DIR/$1 ]; then
 				source $PENZSH_CMD_DIR/$1 ${a:2}
 			else
 				echo "Following commands currently supported:"
