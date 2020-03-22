@@ -1,8 +1,8 @@
 # Setting up local variables for penzsh 'framework'
-__penzshcore_dir_enum=$PENZSH_DIR/enum
-__penzshcore_target=$PENZSH_TARGET
-__penzshcore_os=$PENZSH_OS
+pzcore_dir_enum=$PENZSH_DIR/enum
+pzcore_target=$PENZSH_TARGET
+pzcore_os=$PENZSH_OS
 
-__penzshcore_lhost=${$(ip route get 10.10.10.11 | awk '{print $7}'):-0.0.0.0}
+pzcore_lhost=${$(ip route get 10.10.10.11 | awk '{print $7}'):-0.0.0.0}
 
 

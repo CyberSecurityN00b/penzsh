@@ -2,4 +2,4 @@ source $PENZSH_CMD_DIR/.core
 
 msfdb start
 read "REPLY?Metasploit Workspace: "
-msfconsole -q -x "workspace -a $REPLY;db_import $__penzshcore_dir_enum/nmap/*.xml;setg RHOST $__penzshcore_target;setg RHOSTS $__penzshcore_target;use exploit/multi/handler;setg LHOST $__penzshcore_lhost;show options"
+msfconsole -q -x "workspace -a $REPLY;db_import $pzcore_dir_enum/nmap/*.xml;setg RHOST $pzcore_target;setg RHOSTS $pzcore_target;use exploit/multi/handler;setg LHOST $pzcore_lhost;show options"
