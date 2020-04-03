@@ -1,5 +1,6 @@
 # Setting up local variables for penzsh 'framework'
 pzcore_dir_enum=$PENZSH_DIR/enum
+pzcore_dir_loot=$PENZSH_DIR/loot
 pzcore_target=$PENZSH_TARGET
 pzcore_os=$PENZSH_OS
 

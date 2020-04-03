@@ -1,0 +1,6 @@
+source $PENZSH_CMD_DIR/.core
+
+mkdir -p $pzcore_dir_enum/dirb
+read "REPLY?Enter port of service: "
+dirb http://${pzcore_target}:$REPLY/ ${a:1} -o $pzcore_dir_enum/dirb/http-$REPLY.dirb
+dirb https://${pzcore_target}:$REPLY/ ${a:1} -o $pzcore_dir_enum/dirb/https-$REPLY.dirb

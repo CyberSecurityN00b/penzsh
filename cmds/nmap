@@ -1,4 +1,4 @@
 source $PENZSH_CMD_DIR/.core
 
 mkdir -p $pzcore_dir_enum/nmap
-nmap $pzcore_target -oA $pzcore_dir_enum/nmap/$(date +%Y\\\\%m\\\\%d-%H:%M:%S)-custom $@
+nmap $pzcore_target -oA $pzcore_dir_enum/nmap/$(date +%Y\\\\%m\\\\%d-%H:%M:%S)-custom ${a:1}
