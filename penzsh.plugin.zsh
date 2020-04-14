@@ -65,15 +65,15 @@ function penzsh() {
 			;;
 		flag)
 			case $2 in
-			win*)
+			os:win*)
 				echo windows > $PENZSH_DIR/.penzsh/os
 				penzsh_echo "Now treating target as a Windows machine."
 				;;
-			lin*)
+			os:lin*)
 				echo linux > $PENZSH_DIR/.penzsh/os
 				penzsh_echo "Now treating target as a Linux machine."
 				;;
-			freebsd|bsd)
+			os:freebsd|os:bsd)
 				echo bsd > $PENZSH_DIR/.pensh/os
 				penzsh_echo "Now treating target as a FreeBSD machine."
 				;;
@@ -137,9 +137,9 @@ function penzsh() {
 				echo -e "\tcmds   - List vailable custom/tool commands"
 				echo -e "\tcreate - Make the current direction a penzsh project"
 				echo -e "\tflag"
-				echo -e "\t\tfreebsd - Flag the target as a FreeBSD machine."
-				echo -e "\t\tlinux   - Flag the target as a Linux machine."
-				echo -e "\t\twindows - Flag the target as a Windows machine."
+				echo -e "\t\tos:freebsd - Flag the target as a FreeBSD machine."
+				echo -e "\t\tos:linux   - Flag the target as a Linux machine."
+				echo -e "\t\tos:windows - Flag the target as a Windows machine."
 				echo -e "\t\t------------------------------------------------"
 				echo -e "\t\tanalysis:none    - No analysis is conducted on command output."
 				echo -e "\t\tanalysis:partial - Print command output analysis, where supported."
