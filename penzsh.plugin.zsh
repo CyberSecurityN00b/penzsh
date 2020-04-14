@@ -1,6 +1,7 @@
 ## Exports
 export PENZSH_CMD_DIR="${0:h:a}/cmds"
 export PENZSH_CUSTCMD_DIR="${0:h:a}/custcmds"
+export PENZSH_ANALYSIS_DIR="${0:h:a}/analysis"
 
 ## Hook function definitions
 function chpwd_update_penzsh_vars() {
@@ -36,10 +37,11 @@ function update_current_penzsh_vars() {
 	local x=`pwd`
 	while [ "$x" != "/" ] ; do
 		if [ `find "$x" -maxdepth 1 -name .penzsh -type d 2>/dev/null` ] ; then
-			PENZSH=true
-			PENZSH_DIR=$x
-			PENZSH_TARGET=$(cat $x/.penzsh/target)
-			PENZSH_OS=$(cat $x/.penzsh/os)
+			export PENZSH=true
+			export PENZSH_DIR=$x
+			export PENZSH_TARGET=$(cat $x/.penzsh/target)
+			export PENZSH_OS=$(cat $x/.penzsh/os)
+			export PENZSH_ANALYSIS=$(cat $x/.penzsh/analysis)
 			fc -p $x/.penzsh/history
 			break
 		fi
@@ -74,6 +76,18 @@ function penzsh() {
 			freebsd|bsd)
 				echo bsd > $PENZSH_DIR/.pensh/os
 				penzsh_echo "Now treating target as a FreeBSD machine."
+				;;
+			analysis:none)
+				echo none > $PENZSH_DIR/.penzsh/analysis
+				penzsh_echo "No analysis will be performed on command output."
+				;;
+			analysis:partial)
+				echo partial > $PENZSH_DIR/.penzsh/analysis
+				penzsh_echo "Only output will be displayed when analysis is performed on command output, where supported."
+				;;
+			analysis:full)
+				echo full > $PENZSH_DIR/.penzsh/analysis
+				penzsh_echo "Output will be displayed and noted, and recommended todos created when analysis is performed on command output, where supported."
 				;;
 			*)
 				penzsh_echo "Error: Unknown flag!"
@@ -126,6 +140,10 @@ function penzsh() {
 				echo -e "\t\tfreebsd - Flag the target as a FreeBSD machine."
 				echo -e "\t\tlinux   - Flag the target as a Linux machine."
 				echo -e "\t\twindows - Flag the target as a Windows machine."
+				echo -e "\t\t------------------------------------------------"
+				echo -e "\t\tanalysis:none    - No analysis is conducted on command output."
+				echo -e "\t\tanalysis:partial - Print command output analysis, where supported."
+				echo -e "\t\tanalysis:full    - Print and note command output analysis and create recommended todos."
 				echo -e "\tnote   - Save a note for later"
 				echo -e "\tnotes  - Read your notes for this target"
 				echo -e "\ttodo   - Remind yourself of something"
@@ -147,6 +165,7 @@ function penzsh() {
 			touch $PENZSH_DIR/.penzsh/notes
 			touch $PENZSH_DIR/.penzsh/todo
 			touch $PENZSH_DIR/.penzsh/os
+			echo partial > $PENZSH_DIR/.penzsh/analysis
 			mkdir -p $PENZSH_DIR/enum
 			mkdir -p $PENZSH_DIR/loot
 			mkdir -p $PENZSH_DIR/exploits

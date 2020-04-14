@@ -1,0 +1,14 @@
+#!/bin/bash
+source $PENZSH_CMD_DIR/.core
+
+function pzcore_func_analysis_display()
+{
+}
+
+function pzcore_func_analysis_note()
+{
+}
+
+function pzcore_func_analysis_todo()
+{
+}

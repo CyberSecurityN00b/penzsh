@@ -1,0 +1,7 @@
+#!/bin/bash
+source $PENZSH_ANALYSIS_DIR/.core
+
+function pzcore_analysis_nmap ()
+{
+	# $1 - filepath to *.gnmap file to be analyzed
+}
