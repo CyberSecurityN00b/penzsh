@@ -1,9 +1,54 @@
+#!/bin/bash
 # Setting up local variables for penzsh 'framework'
 pzcore_dir_enum=$PENZSH_DIR/enum
 pzcore_dir_loot=$PENZSH_DIR/loot
 pzcore_target=$PENZSH_TARGET
 pzcore_os=$PENZSH_OS
 
+pzcore_timestamp=$(date +%Y-%m-%d.%H:%M:%S)
+
 pzcore_lhost=${$(ip route get 10.10.10.11 | awk '{print $7}'):-0.0.0.0}
 
+### COLORS ####################################################################
+PZCORE_COLOR_OFF='\033[0m'
+PZCORE_COLOR_RED='\033[0;31m'
+PZCORE_COLOR_GREEN='\033[0;32m'
 
+PZCORE_COLOR_NORMAL=$PZCORE_COLOR_GREEN
+PZCORE_COLOR_WARNING=$PZCORE_COLOR_RED
+###############################################################################
+
+pzcore_func_echo()
+{
+	echo -e "${PZCORE_COLOR_NORMAL}||PENZSH|| >>${PZCORE_COLOR_OFF} $1"
+}
+
+pzcore_func_warn()
+{
+	echo -e "${PZCORE_COLOR_WARNING}||PENZSH|| >> WARNING:${PZCORE_COLOR_OFF} $1"
+}
+
+pzcore_func_yesno()
+{
+	pzcore_func_echo "$1"
+	read -q "REPLY?(y/n): "
+	echo
+}
+
+pzcore_func_require()
+{
+	# $1 - String used to check existence of requirement
+	# $2 - String used to install necessary requirement
+	
+	eval "$1"
+	if [ "$?" = 1 ] ; then
+		pzcore_func_warn "This command is missing a requirement!"
+		pzcore_func_yesno "Should I run the following to fulfill this requirement?\n\t$2"
+		if [[ $REPLY =~ ^[Yy]$ ]] ; then
+			eval "$2"
+		else
+			pzcore_func_warn "FAILED to run command without requirement!"
+			return 1
+		fi
+	fi
+}

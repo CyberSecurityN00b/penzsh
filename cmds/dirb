@@ -1,6 +1,10 @@
+#!/bin/bash
 source $PENZSH_CMD_DIR/.core
 
-mkdir -p $pzcore_dir_enum/dirb
-read "REPLY?Enter port of service: "
-dirb http://${pzcore_target}:$REPLY/ ${a:1} -o $pzcore_dir_enum/dirb/http-$REPLY.dirb
-dirb https://${pzcore_target}:$REPLY/ ${a:1} -o $pzcore_dir_enum/dirb/https-$REPLY.dirb
+pzcore_func_require "which dirb" "sudo apt-get install dirb"
+if [ "$?" = 0 ] ; then
+	mkdir -p $pzcore_dir_enum/dirb
+	read "REPLY?Enter port of service: "
+	dirb http://${pzcore_target}:$REPLY/ ${a:1} -o $pzcore_dir_enum/dirb/http-$REPLY.$pzcore_timestamp.dirb
+	dirb https://${pzcore_target}:$REPLY/ ${a:1} -o $pzcore_dir_enum/dirb/https-$REPLY.$pzcoretimestamp.dirb
+fi

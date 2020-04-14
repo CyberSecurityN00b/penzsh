@@ -1,6 +1,9 @@
 source $PENZSH_CMD_DIR/.core
 
-mkdir -p $pzcore_dir_loot/ftp
-cd $pzcore_dir_loot/ftp
-ftp $pzcore_target ${a:1}
-cd -
+pzcore_func_require "which ftp" "sudo apt-get install ftp"
+if [ "$?" = 0 ] ; then
+	mkdir -p $pzcore_dir_loot/ftp
+	cd $pzcore_dir_loot/ftp
+	ftp $pzcore_target ${a:1}
+	cd -
+fi
