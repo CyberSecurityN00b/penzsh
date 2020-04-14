@@ -1,0 +1,4 @@
+#!/bin/bash
+# Primary repository will not have any custom commands.
+# Used for personal commands, have higher priority than 'standard' commands.
+source $PENZSH_CMD_DIR/.core
