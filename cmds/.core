@@ -40,7 +40,7 @@ pzcore_func_require()
 	# $1 - String used to check existence of requirement
 	# $2 - String used to install necessary requirement
 	
-	eval "$1"
+	eval "$1 >/dev/null 2>&1"
 	if [ "$?" = 1 ] ; then
 		pzcore_func_warn "This command is missing a requirement!"
 		pzcore_func_yesno "Should I run the following to fulfill this requirement?\n\t$2"

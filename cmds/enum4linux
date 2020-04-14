@@ -1,0 +1,8 @@
+#!/bin/bash
+source $PENZSH_CMD_DIR/.core
+
+pzcore_func_require "which enum4linux" "sudo apt-get install enum4linux"
+if [ "$?" = 0 ] ; then
+	mkdir -p $pzcore_dir_enum/enum4linux
+	enum4linux ${a:1} $pzcore_target | tee $pzcore_dir_enum/enum4linux/custom.$pzcore_timestamp.e4l
+fi
