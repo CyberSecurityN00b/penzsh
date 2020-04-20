@@ -59,6 +59,10 @@ function penzsh() {
 
 	if ( $PENZSH ) ; then
 		case $CMD in
+		analyze)
+			source $PENZSH_ANALYSIS_DIR/analyze
+			penzsh_analysis_analyze ${a:2}
+			;;
 		create)
 			penzsh_echo "Currently in a penzsh project for $PENZSH_TARGET!"
 			penzsh_echo "penzsh does not support sub-projects!"
@@ -76,6 +80,18 @@ function penzsh() {
 			os:freebsd|os:bsd)
 				echo bsd > $PENZSH_DIR/.pensh/os
 				penzsh_echo "Now treating target as a FreeBSD machine."
+				;;
+			analysis:none)
+				echo none > $PENZSH_DIR/.penzsh/analysis
+				penzsh_echo "No analysis will be performed on command output."
+				;;
+			analysis:partial)
+				echo partial > $PENZSH_DIR/.penzsh/analysis
+				penzsh_echo "Only output will be displayed when analysis is performed on command output, where supported."
+				;;
+			analysis:full)
+				echo full > $PENZSH_DIR/.penzsh/analysis
+				penzsh_echo "Output will be displayed and noted, and recommended todos created when analysis is performed on command output, where supported."
 				;;
 			*)
 				penzsh_echo "Error: Unknown flag!"
@@ -122,12 +138,17 @@ function penzsh() {
 				source $PENZSH_CMD_DIR/$1 ${a:2}
 			else
 				echo "Following commands currently supported:"
+				echo -e "\tanalyze <file> - Analyze a file"
 				echo -e "\tcmds           - List vailable custom/tool commands"
 				echo -e "\tcreate         - Make the current direction a penzsh project"
 				echo -e "\tflag"
 				echo -e "\t\tos:freebsd - Flag the target as a FreeBSD machine."
 				echo -e "\t\tos:linux   - Flag the target as a Linux machine."
 				echo -e "\t\tos:windows - Flag the target as a Windows machine."
+				echo -e "\t\t------------------------------------------------"
+				echo -e "\t\tanalysis:none    - No analysis is conducted on command output."
+				echo -e "\t\tanalysis:partial - Print command output analysis, where supported."
+				echo -e "\t\tanalysis:full    - Print and note command output analysis and create recommended todos."
 				echo -e "\tnote           - Save a note for later"
 				echo -e "\tnotes          - Read your notes for this target"
 				echo -e "\ttodo           - Remind yourself of something"
