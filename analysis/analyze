@@ -1,14 +1,19 @@
 #!/bin/bash
 source $PENZSH_CMD_DIR/.core
 
-function pzcore_func_analysis_display()
+function penzsh_analysis_analyze()
 {
-}
-
-function pzcore_func_analysis_note()
-{
-}
-
-function pzcore_func_analysis_todo()
-{
+	if [[ "$PENZSH_ANALYSIS" = "full" || "$PENZSH_ANALYSIS" = "partial" ]] ; then
+		pzcore_func_echo "Starting Analysis..."
+		pzcore_func_require "which python3" "sudo apt-get install python3"
+		if [ "$?" = 0 ] ; then
+			pzcore_func_require "which pip3" "sudo apt-get install python3-pip"
+			if [ "$?" = 0 ] ; then
+				pzcore_func_require "pip3 list | grep \"yara-python\"" "pip3 install yara-python"
+				if [ "$?" = 0 ] ; then
+					python3 $PENZSH_ANALYSIS_DIR/analyze.py
+				fi
+			fi
+		fi
+	fi
 }
