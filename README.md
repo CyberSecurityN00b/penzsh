@@ -10,6 +10,11 @@ Add 'penzsh' to the list of plugins in ~/.zshrc
 
 Add 'penzsh' to your POWERLEVEL9K_LEFT_PROMPT_ELEMENTS (or RIGHT) in ~/.p10k.zsh
 
+## Usage
+Run `penzsh create` in a directory to make the directory (and all current/future sub-directories) part of the penzsh project.
+
+Use `penzsh help` to see the core `penzsh` functionality, and `penzsh cmds` for a list of target-contextual commands.
+
 ## Custom Usage
 For your own custom commands, place them in the ./custcmds folder. The commands in ./cmds should provide enough information to write your own, for those inclined for scripting. Where a conflict in name exists between a command in ./custcmds and ./cmds, the one in ./custcmds will be used.
 

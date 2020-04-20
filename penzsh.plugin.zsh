@@ -111,6 +111,10 @@ function penzsh() {
 			fi
 			;;
 		cmds)
+			echo "Custom Commands:"
+			ls $PENZSH_CUSTCMD_DIR
+			echo ""
+			echo "Core Commands:"
 			ls $PENZSH_CMD_DIR
 			;;
 		*)
