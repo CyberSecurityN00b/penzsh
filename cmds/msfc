@@ -1,7 +1,7 @@
 #!/bin/bash
 source $PENZSH_CMD_DIR/.core
 
-pzcore_func_require "which msfconsole1" "return 1 #Automated install of msfconsole not yet supported"
+pzcore_func_require "which msfconsole" "return 1 #Automated install of msfconsole not yet supported"
 if [ "$?" = 0 ] ; then
 	msfdb init
 	read "REPLY?Metasploit Workspace: "
