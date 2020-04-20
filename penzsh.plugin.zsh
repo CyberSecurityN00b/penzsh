@@ -174,6 +174,7 @@ function penzsh() {
 			mkdir -p $PENZSH_DIR/enum
 			mkdir -p $PENZSH_DIR/loot
 			mkdir -p $PENZSH_DIR/exploits
+			mkdir -p $PENZSH_DIR/privesc
 
 			update_current_penzsh_vars
 			;;
