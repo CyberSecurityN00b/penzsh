@@ -8,7 +8,7 @@ pzcore_os=$PENZSH_OS
 
 pzcore_timestamp=$(date +%Y-%m-%d.%H:%M:%S)
 
-pzcore_lhost=${$(ip route get 10.10.10.11 | awk '{print $7}'):-0.0.0.0}
+pzcore_lhost=${$(ip route get $pzcore_target | awk '{print $7}'):-0.0.0.0}
 
 ### COLORS ####################################################################
 PZCORE_COLOR_OFF='\033[0m'
