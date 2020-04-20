@@ -5,5 +5,5 @@ pzcore_func_require "which msfconsole1" "return 1 #Automated install of msfconso
 if [ "$?" = 0 ] ; then
 	msfdb init
 	read "REPLY?Metasploit Workspace: "
-	msfconsole -q -x "workspace -a $REPLY;db_import $pzcore_dir_enum/nmap/*.xml;setg RHOST $pzcore_target;setg RHOSTS $pzcore_target;use exploit/multi/handler;setg LHOST $pzcore_lhost;show options"
+	msfconsole -q -x "workspace -a $REPLY;db_import $pzcore_dir_enum/nmap/*.xml;setg RHOST $pzcore_target;setg RHOSTS $pzcore_target;use exploit/multi/handler;setg LHOST $pzcore_lhost;set ExitOnSession False;show options"
 fi
