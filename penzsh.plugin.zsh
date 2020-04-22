@@ -108,6 +108,7 @@ function penzsh() {
 				echo ""
 				if [ $REPLY = "y" ] ; then
 					sed -i "${TODO_N}d;" $PENZSH_DIR/.penzsh/todo
+					penzsh note "Completed todo: ${TODO_TASK}"
 					penzsh_echo "Todo removed!"
 				else
 					penzsh_echo "Aborting todo completion!"
