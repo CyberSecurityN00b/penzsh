@@ -1,0 +1,11 @@
+#!/bin/bash
+source $PENZSH_CUSTCMD_DIR/.core
+
+function penzsh_cmd_do()
+{
+}
+
+function penzsh_cmd_info()
+{
+	echo -e "<<<info here>>>"
+}

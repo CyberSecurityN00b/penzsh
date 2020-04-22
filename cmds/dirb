@@ -1,10 +1,18 @@
 #!/bin/bash
 source $PENZSH_CMD_DIR/.core
 
-pzcore_func_require "which dirb" "sudo apt-get install dirb"
-if [ "$?" = 0 ] ; then
-	mkdir -p $pzcore_dir_enum/dirb
-	read "REPLY?Enter port of service: "
-	dirb http://${pzcore_target}:$REPLY/ ${a:1} -o $pzcore_dir_enum/dirb/http-$REPLY.$pzcore_timestamp.dirb
-	dirb https://${pzcore_target}:$REPLY/ ${a:1} -o $pzcore_dir_enum/dirb/https-$REPLY.$pzcoretimestamp.dirb
-fi
+function penzsh_cmd_do()
+{
+	pzcore_func_require "which dirb" "sudo apt-get install dirb"
+	if [ "$?" = 0 ] ; then
+		mkdir -p $pzcore_dir_enum/dirb
+		read "REPLY?Enter port of service: "
+		dirb http://${pzcore_target}:$REPLY/ ${a:1} -o $pzcore_dir_enum/dirb/http-$REPLY.$pzcore_timestamp.dirb
+		dirb https://${pzcore_target}:$REPLY/ ${a:1} -o $pzcore_dir_enum/dirb/https-$REPLY.$pzcoretimestamp.dirb
+	fi
+}
+
+function penzsh_cmd_info()
+{
+	echo -e "Runs dirb for both http/https on $pzcore_target for the specified port with the specified args."
+}

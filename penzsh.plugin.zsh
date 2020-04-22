@@ -1,3 +1,4 @@
+#!/bin/bash
 ## Exports
 export PENZSH_CMD_DIR="${0:h:a}/cmds"
 export PENZSH_CUSTCMD_DIR="${0:h:a}/custcmds"
@@ -51,6 +52,9 @@ update_current_penzsh_vars
 function penzsh_echo() {
 	echo "PENZSH >>> ${@}"
 }
+
+function penzsh_cmd_do(){}
+function penzsh_cmd_info(){}
 
 function penzsh() {
 	local CMD=${1:-help}
@@ -110,6 +114,27 @@ function penzsh() {
 				fi
 			fi
 			;;
+		info)
+			if [ -f $PENZSH_CUSTCMD_DIR/$2 ]; then
+				source $PENZSH_CUSTCMD_DIR/$2 ${a:3}
+				echo "=== $2 Information ==="
+				penzsh_cmd_info
+				echo ""
+				echo "=== $2 Definition  ==="
+				declare -f penzsh_cmd_do
+			elif [ -f $PENZSH_CMD_DIR/$2 ]; then
+				source $PENZSH_CMD_DIR/$2 ${a:3}
+				echo "=== $2 Information ==="
+				penzsh_cmd_info
+				echo ""
+				echo "=== $2 Definition  ==="
+				declare -f penzsh_cmd_do
+			else
+				penzsh_echo "No such command: $2"
+				echo ""
+				penzsh cmds
+			fi
+			;;
 		cmds)
 			echo "Custom Commands:"
 			ls $PENZSH_CUSTCMD_DIR
@@ -120,10 +145,12 @@ function penzsh() {
 		*)
 			if [ -f $PENZSH_CUSTCMD_DIR/$1 ]; then
 				source $PENZSH_CUSTCMD_DIR/$1 ${a:2}
+				penzsh_cmd_do
 			elif [ -f $PENZSH_CMD_DIR/$1 ]; then
 				source $PENZSH_CMD_DIR/$1 ${a:2}
+				penzsh_cmd_do
 			else
-				echo "Following commands currently supported:"
+				echo -e "Following commands currently supported:"
 				echo -e "\tanalyze <file> - Analyze a file"
 				echo -e "\tcmds           - List vailable custom/tool commands"
 				echo -e "\tcreate         - Make the current direction a penzsh project"
@@ -135,6 +162,10 @@ function penzsh() {
 				echo -e "\tnotes          - Read your notes for this target"
 				echo -e "\ttodo           - Remind yourself of something"
 				echo -e "\ttodos          - See what you need to do for this target"
+				echo -e ""
+				echo -e "To use cmds:"
+				echo -e "\tinfo <cmd>     - Shows brief info of command and prints command definition"
+				echo -e "\t<cmd>          - Runs contextual command"
 			fi
 			;;
 		esac
