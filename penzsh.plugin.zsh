@@ -117,14 +117,14 @@ function penzsh() {
 			;;
 		info)
 			if [ -f $PENZSH_CUSTCMD_DIR/$2 ]; then
-				source $PENZSH_CUSTCMD_DIR/$2 ${a:3}
+				source $PENZSH_CUSTCMD_DIR/$2
 				echo "=== $2 Information ==="
 				penzsh_cmd_info
 				echo ""
 				echo "=== $2 Definition  ==="
 				declare -f penzsh_cmd_do
 			elif [ -f $PENZSH_CMD_DIR/$2 ]; then
-				source $PENZSH_CMD_DIR/$2 ${a:3}
+				source $PENZSH_CMD_DIR/$2
 				echo "=== $2 Information ==="
 				penzsh_cmd_info
 				echo ""
@@ -145,11 +145,11 @@ function penzsh() {
 			;;
 		*)
 			if [ -f $PENZSH_CUSTCMD_DIR/$1 ]; then
-				source $PENZSH_CUSTCMD_DIR/$1 ${a:2}
-				penzsh_cmd_do
+				source $PENZSH_CUSTCMD_DIR/$1
+				penzsh_cmd_do ${@:2}
 			elif [ -f $PENZSH_CMD_DIR/$1 ]; then
-				source $PENZSH_CMD_DIR/$1 ${a:2}
-				penzsh_cmd_do
+				source $PENZSH_CMD_DIR/$1
+				penzsh_cmd_do ${@:2}
 			else
 				echo -e "Following commands currently supported:"
 				echo -e "\tanalyze <file> - Analyze a file"
@@ -188,6 +188,7 @@ function penzsh() {
 			mkdir -p $PENZSH_DIR/loot
 			mkdir -p $PENZSH_DIR/exploit
 			mkdir -p $PENZSH_DIR/privesc
+			mkdir -p $PENZSH_DIR/research
 
 			update_current_penzsh_vars
 			;;

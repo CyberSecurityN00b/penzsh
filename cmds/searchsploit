@@ -1,0 +1,16 @@
+#!/bin/bash
+source $PENZSH_CMD_DIR/.core
+
+function penzsh_cmd_do()
+{
+	pzcore_func_require "dpkg -l exploitdb" "sudo apt-get install exploitdb"
+	if [ "$?" = 0 ] ; then
+		mkdir -p $pzcore_dir_research
+		searchsploit ${@:1} | tee $pzcore_dir_research/$(pzcore_func_validate_filename "${@:1}").$pzcore_timestamp.searchsploit.txt
+	fi
+}
+
+function penzsh_cmd_info()
+{
+	echo -e "Runs 'searchsploit <args> | tee $pzcore_dir_research/<args>.$pzcore_timestamp.searchsploit.txt'"
+}

@@ -6,7 +6,7 @@ function penzsh_cmd_do()
 	pzcore_func_require "which nmap" "sudo apt-get install nmap"
 	if [ "$?" = 0 ] ; then
 		mkdir -p $pzcore_dir_enum/nmap
-		nmap $pzcore_target -oA $pzcore_dir_enum/nmap/custom.$pzcore_timestamp ${a:1}
+		nmap $pzcore_target -oA $pzcore_dir_enum/nmap/custom.$pzcore_timestamp ${@:1}
 	fi
 }
 

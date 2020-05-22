@@ -2,6 +2,7 @@
 # Setting up local variables for penzsh 'framework'
 pzcore_dir_enum=$PENZSH_DIR/enum
 pzcore_dir_loot=$PENZSH_DIR/loot
+pzcore_dir_research=$PENZSH_DIR/research
 pzcore_dir_tools=/opt/penzsh
 pzcore_target=$PENZSH_TARGET
 pzcore_os=$PENZSH_OS
@@ -52,4 +53,9 @@ pzcore_func_require()
 			return 1
 		fi
 	fi
+}
+
+pzcore_func_validate_filename()
+{
+	echo ${@:1} | sed -e 's/[^A-Za-z0-9._-]/_/g'
 }
