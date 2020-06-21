@@ -1,0 +1,18 @@
+#!/bin/bash
+source $PENZSH_CMD_DIR/.core
+
+function penzsh_cmd_do()
+{
+	pzcore_func_require "which python3" "sudo apt-get install python3"
+	if [ "$?" = 0 ] ; then
+		mkdir -p $pzcore_dir_server
+		cd $pzcore_dir_server
+		python3 -m http.server
+		cd -
+	fi
+}
+
+function penzsh_cmd_info()
+{
+	echo -e "Runs 'python3 -m http.server' from $pzcore_dir_server."
+}

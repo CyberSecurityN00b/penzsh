@@ -3,6 +3,7 @@
 pzcore_dir_enum=$PENZSH_DIR/enum
 pzcore_dir_loot=$PENZSH_DIR/loot
 pzcore_dir_research=$PENZSH_DIR/research
+pzcore_dir_server=$PENZSH_DIR/server
 pzcore_dir_tools=/opt/penzsh
 pzcore_target=$PENZSH_TARGET
 pzcore_os=$PENZSH_OS

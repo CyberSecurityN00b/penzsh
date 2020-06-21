@@ -1,0 +1,24 @@
+#!/bin/bash
+source $PENZSH_CMD_DIR/.core
+
+function penzsh_cmd_do()
+{
+	pzcore_func_require "which python3" "sudo apt-get install python3"
+	if [ "$?" = 0 ] ; then
+		mkdir -p $pzcore_dir_server/shells
+		cd $pzcore_dir_server/shells
+		cp $PENZSH_CUSTSHELL_DIR/* . 2>/dev/null
+		cp $PENZSH_SHELL_DIR/* . 2>/dev/null
+		pzcore_func_echo "The following shells are available (double check port):"
+		for shell in $(ls -1); do
+			pzcore_func_echo "\thttp://$pzcore_lhost:8000/$shell"
+		done
+		python3 -m http.server
+		cd -
+	fi
+}
+
+function penzsh_cmd_info()
+{
+	echo -e "Runs 'python3 -m http.server' from $pzcore_dir_server/shells after populating it with some common shells."
+}

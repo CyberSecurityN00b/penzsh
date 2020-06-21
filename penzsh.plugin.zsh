@@ -2,6 +2,8 @@
 ## Exports
 export PENZSH_CMD_DIR="${0:h:a}/cmds"
 export PENZSH_CUSTCMD_DIR="${0:h:a}/custcmds"
+export PENZSH_SHELL_DIR="${0:h:a}/shells"
+export PENZSH_CUSTSHELL_DIR="${0:h:a}/custshells"
 
 ## Hook function definitions
 function chpwd_update_penzsh_vars() {
