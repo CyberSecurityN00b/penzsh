@@ -1,0 +1,18 @@
+#!/bin/bash
+source $PENZSH_CMD_DIR/.core
+
+function penzsh_cmd_do()
+{
+	pzcore_func_require "which pftp" "sudo apt-get install pftp"
+	if [ "$?" = 0 ] ; then
+		mkdir -p $pzcore_dir_loot/ftp
+		cd $pzcore_dir_loot/ftp
+		pftp $pzcore_target ${@:1}
+		cd -
+	fi
+}
+
+function penzsh_cmd_info()
+{
+	echo -e "Runs 'pftp $pzcore_target <args>' and makes the working directory $pzcore_dir_loot/ftp"
+}

@@ -1,0 +1,18 @@
+#!/bin/bash
+source $PENZSH_CMD_DIR/.core
+
+function penzsh_cmd_do()
+{
+	pzcore_func_require "which whatweb" "sudo apt-get install whatweb"
+	if [ "$?" = 0 ] ; then
+		mkdir -p $pzcore_dir_enum/whatweb
+		read "REPLY?Enter port of service: "
+		whatweb http://${pzcore_target}:$REPLY/ | tee $pzcore_dir_enum/whatweb/http-$REPLY.$pzcore_timestamp.whatweb
+		whatweb https://${pzcore_target}:$REPLY/ | tee $pzcore_dir_enum/whatweb/https-$REPLY.$pzcore_timestamp.whatweb
+	fi
+}
+
+function penzsh_cmd_info()
+{
+	echo -e "Runs whatweb for both http/https on $pzcore_target for the specified port with the specified args."
+}
