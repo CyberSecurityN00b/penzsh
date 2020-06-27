@@ -170,6 +170,8 @@ function penzsh() {
 				echo -e "To use cmds:"
 				echo -e "\tinfo <cmd>     - Shows brief info of command and prints command definition"
 				echo -e "\t<cmd>          - Runs contextual command"
+				echo -e ""
+				echo -e "Note: You can use \$pzip easily reference the target when in a PENZSH directory."
 			fi
 			;;
 		esac
