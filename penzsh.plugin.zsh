@@ -43,6 +43,7 @@ function update_current_penzsh_vars() {
 			export PENZSH_DIR=$x
 			export PENZSH_TARGET=$(cat $x/.penzsh/target)
 			export PENZSH_OS=$(cat $x/.penzsh/os)
+			export pzip=$PENZSH_TARGET
 			fc -p $x/.penzsh/history
 			break
 		fi
