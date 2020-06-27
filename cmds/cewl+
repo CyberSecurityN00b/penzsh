@@ -1,0 +1,21 @@
+#!/bin/bash
+source $PENZSH_CMD_DIR/.core
+
+function penzsh_cmd_do()
+{
+	pzcore_func_require "which cewl" "sudo apt-get install cewl"
+	pzcore_func_require "which john" "sudo apt-get install john"
+	if [ "$?" = 0 ] ; then
+		mkdir -p $pzcore_dir_enum/cewl
+		read "REPLY?Enter port of service: "
+		cewl ${@:1} -w $pzcore_dir_enum/cewl/http-$REPLY-$pzcore_timestamp.cewl http://${pzcore_target}:$REPLY
+		john --wordlist=$pzcore_dir_enum/cewl/http-$REPLY-$pzcore_timestamp.cewl --rules --stdout > $pzcore_dir_enum/cewl/http-$REPLY-$pzcore_timestamp.cewl.rules
+		cewl ${@:1} -w $pzcore_dir_enum/cewl/https-$REPLY-$pzcore_timestamp.cewl https://${pzcore_target}:$REPLY
+		john --wordlist=$pzcore_dir_enum/cewl/https-$REPLY-$pzcore_timestamp.cewl --rules --stdout > $pzcore_dir_enum/cewl/https-$REPLY-$pzcore_timestamp.cewl.rules
+	fi
+}
+
+function penzsh_cmd_info()
+{
+	echo -e "Runs cewl for both http/https on $pzcore_target for the specified port with the specified args, then uses john to apply rules."
+}
