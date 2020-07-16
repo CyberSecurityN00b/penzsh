@@ -155,7 +155,7 @@ function penzsh() {
 				penzsh_cmd_do ${@:2}
 			else
 				echo -e "Following commands currently supported:"
-				echo -e "\tanalyze <file> - Analyze a file"
+				#echo -e "\tanalyze <file> - Analyze a file"
 				echo -e "\tcmds           - List vailable custom/tool commands"
 				echo -e "\tcreate         - Make the current direction a penzsh project"
 				echo -e "\tflag"
