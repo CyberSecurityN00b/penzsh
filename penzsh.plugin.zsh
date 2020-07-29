@@ -79,7 +79,7 @@ function penzsh() {
 				penzsh_echo "Now treating target as a Linux machine."
 				;;
 			os:freebsd|os:bsd)
-				echo bsd > $PENZSH_DIR/.pensh/os
+				echo bsd > $PENZSH_DIR/.penzsh/os
 				penzsh_echo "Now treating target as a FreeBSD machine."
 				;;
 			*)
