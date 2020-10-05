@@ -4,6 +4,16 @@ export PENZSH_CMD_DIR="${0:h:a}/cmds"
 export PENZSH_CUSTCMD_DIR="${0:h:a}/custcmds"
 export PENZSH_SHELL_DIR="${0:h:a}/shells"
 export PENZSH_CUSTSHELL_DIR="${0:h:a}/custshells"
+export PENZSH_CONFIG_DEFAULT="${0:h:a}/config.sh"
+export PENZSH_CONFIG_LOCAL="/opt/penzsh/config.sh"
+
+# Load the default to get everything, and then local to get changes
+if [ -f ${PENZSH_CONFIG_DEFAULT} ] ; then
+	source ${PENZSH_CONFIG_DEFAULT}
+fi
+if [ -f ${PENZSH_CONFIG_LOCAL} ] ; then
+	source ${PENZSH_CONFIG_LOCAL}
+fi
 
 ## Hook function definitions
 function chpwd_update_penzsh_vars() {
@@ -42,6 +52,8 @@ function update_current_penzsh_vars() {
 			export PENZSH=true
 			export PENZSH_DIR=$x
 			export PENZSH_TARGET=$(cat $x/.penzsh/target)
+			export PENZSH_RHOST=${PENZSH_TARGET}
+			export PENZSH_LHOST=${$(ip route get $PENZSH_RHOST| awk '{print $7}'):-0.0.0.0}
 			export PENZSH_OS=$(cat $x/.penzsh/os)
 			export pzip=$PENZSH_TARGET
 			fc -p $x/.penzsh/history
@@ -95,7 +107,11 @@ function penzsh() {
 			less $PENZSH_DIR/.penzsh/notes
 			;;
 		todo)
-			echo "${@:2}" >> $PENZSH_DIR/.penzsh/todo
+			# fix for empty lines if someone just does `pz todo`
+			if [ "$#" -ne 1 ]
+			then
+				echo "${@:2}" >> $PENZSH_DIR/.penzsh/todo
+			fi
 			;;
 		todos)
 			cat -n $PENZSH_DIR/.penzsh/todo
@@ -171,7 +187,14 @@ function penzsh() {
 				echo -e "\tinfo <cmd>     - Shows brief info of command and prints command definition"
 				echo -e "\t<cmd>          - Runs contextual command"
 				echo -e ""
-				echo -e "Note: You can use \$pzip easily reference the target when in a PENZSH directory."
+				echo -e "========== N O T E S =========="
+				echo -e " - Try using 'pz' instead of 'penzsh' when calling this command!"
+				echo -e " - You can use \$pzip to easily reference the target when in a PENZSH directory."
+				echo -e " - If you're having trouble with default wordlists, make sure they are installed and you've run 'updatedb'."
+				echo -e " - If you haven't already, copy ${PENZSH_CONFIG_DEFAULT} to ${PENZSH_CONFIG_LOCAL} and update with your preferences."
+				echo -e ""
+				echo -e "========== V A R I A B L E S =========="
+				env | egrep -i "^(penzsh_.*=|pz_.*=)"
 			fi
 			;;
 		esac
@@ -194,6 +217,7 @@ function penzsh() {
 			mkdir -p $PENZSH_DIR/exploit
 			mkdir -p $PENZSH_DIR/privesc
 			mkdir -p $PENZSH_DIR/research
+			mkdir -p $PENZSH_DIR/server
 
 			update_current_penzsh_vars
 			;;

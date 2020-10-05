@@ -10,7 +10,7 @@ pzcore_os=$PENZSH_OS
 
 pzcore_timestamp=$(date +%Y-%m-%d.%H:%M:%S)
 
-pzcore_lhost=${$(ip route get $pzcore_target | awk '{print $7}'):-0.0.0.0}
+pzcore_lhost=$PENZSH_LHOST
 
 ### COLORS ####################################################################
 PZCORE_COLOR_OFF='\033[0m'
@@ -59,4 +59,15 @@ pzcore_func_require()
 pzcore_func_validate_filename()
 {
 	echo ${@:1} | sed -e 's/[^A-Za-z0-9._-]/_/g'
+}
+
+pzcore_func_is_ssl()
+{
+	# $1 - URL with port, i.e., 10.10.10.10:80 or google.com:443
+	echo "Q" | openssl s_client -quiet -connect $1 2>/dev/null
+	if [ "$?" = 1 ] ; then
+		return 0
+	else
+		return 1
+	fi
 }

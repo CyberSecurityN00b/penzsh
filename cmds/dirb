@@ -7,8 +7,12 @@ function penzsh_cmd_do()
 	if [ "$?" = 0 ] ; then
 		mkdir -p $pzcore_dir_enum/dirb
 		read "REPLY?Enter port of service: "
-		dirb http://${pzcore_target}:$REPLY/ ${@:1} -o $pzcore_dir_enum/dirb/http-$REPLY.$pzcore_timestamp.dirb
-		dirb https://${pzcore_target}:$REPLY/ ${@:1} -o $pzcore_dir_enum/dirb/https-$REPLY.$pzcore_timestamp.dirb
+		pzcore_func_is_ssl ${pzcore_target}:$REPLY
+                if [ "$?" = 0 ] ; then
+			dirb http://${pzcore_target}:$REPLY/ ${PENZSH_WORDLIST_WEBENUM} ${@:1} -o $pzcore_dir_enum/dirb/http-$REPLY.$pzcore_timestamp.dirb
+		else
+			dirb https://${pzcore_target}:$REPLY/ ${PENZSH_WORDLIST_WEBENUM} ${@:1} -o $pzcore_dir_enum/dirb/https-$REPLY.$pzcore_timestamp.dirb
+		fi
 	fi
 }
 
