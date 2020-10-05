@@ -1,5 +1,6 @@
 #!/bin/bash
 ## Exports
+export PENZSH_HOME_DIR="${0:h:a}"
 export PENZSH_CMD_DIR="${0:h:a}/cmds"
 export PENZSH_CUSTCMD_DIR="${0:h:a}/custcmds"
 export PENZSH_SHELL_DIR="${0:h:a}/shells"
@@ -134,6 +135,10 @@ function penzsh() {
 				fi
 			fi
 			;;
+		update)
+			git --git-dir=$PENZSH_HOME_DIR pull
+			penzsh_echo "If successful, you should have any updates. Please restart your shell!"
+			;;
 		info)
 			if [ -f $PENZSH_CUSTCMD_DIR/$2 ]; then
 				source $PENZSH_CUSTCMD_DIR/$2
@@ -182,6 +187,7 @@ function penzsh() {
 				echo -e "\tnotes          - Read your notes for this target"
 				echo -e "\ttodo           - Remind yourself of something"
 				echo -e "\ttodos          - See what you need to do for this target"
+				echo -e "\tupdate         - Updates the penzsh project, ONLY IF YOU GIT CLONED IT!"
 				echo -e ""
 				echo -e "To use cmds:"
 				echo -e "\tinfo <cmd>     - Shows brief info of command and prints command definition"
