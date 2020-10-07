@@ -29,6 +29,7 @@ function prompt_penzsh() {
 		windows) pzsh_icon="WINDOWS_ICON";;
 		linux) pzsh_icon="LINUX_ICON";;
 		bsd) pzsh_icon="FREEBSD_ICON";;
+		net) pzsh_icon="NETWORK_ICON";;
 		*) pzsh_icon="VCS_UNTRACKED_ICON";;
 		esac
 		
@@ -45,23 +46,49 @@ alias pz=penzsh
 ## Function Definitions
 function update_current_penzsh_vars() {
 	# Are we in a penzsh project?
-	PENZSH=false
+	export PENZSH=false
+	export PENZSH_PROXY_NET=false
+	export PENZSH_PROXY_HOST=false
 	fc -P
 	local x=`pwd`
 	while [ "$x" != "/" ] ; do
 		if [ `find "$x" -maxdepth 1 -name .penzsh -type d 2>/dev/null` ] ; then
 			export PENZSH=true
 			export PENZSH_DIR=$x
-			export PENZSH_TARGET=$(cat $x/.penzsh/target)
-			export PENZSH_RHOST=${PENZSH_TARGET}
+			export PENZSH_DIR_META=$x/.penzsh
 			export PENZSH_LHOST=${$(ip route get $PENZSH_RHOST| awk '{print $7}'):-0.0.0.0}
-			export PENZSH_OS=$(cat $x/.penzsh/os)
-			export pzip=$PENZSH_TARGET
-			fc -p $x/.penzsh/history
 			break
+		elif [ `find "$x" -maxdepth 1 -name .penzsh_proxy_net -type d 2>/dev/null` ] ; then
+			export PENZSH_PROXY_NET=true
+			export PENZSH_PROXY_NET_DIR=$x
+		elif [ `find "$x" -maxdepth 1 -name .penzsh_proxy_host -type d 2>/dev/null` ] ; then
+			export PENZSH_PROXY_HOST=true
+			export PENZSH_PROXY_HOST_DIR=$x
 		fi
 		x=`dirname "$x"`
 	done
+
+	if [ $PENZSH ] ; then
+		if [ $PENZSH_PROXY_HOST ] ; then
+			export PENZSH_DIR=$PENZSH_PROXY_HOST_DIR
+			export PENZSH_DIR_META=$PENZSH_PROXY_HOST_DIR/.penzsh_proxy_host
+			export PENZSH_TARGET=$(cat $PENZSH_DIR_META/target)
+			export PENZSH_OS=$(cat $PENZSH_DIR_META/os)
+		elif [ $PENZSH_PROXY_NET ] ; then
+			export PENZSH_DIR=$PENZSH_PROXY_NET_DIR
+			export PENZSH_DIR_META=$PENZSH_PROXY_NET_DIR/.penzsh_proxy_net
+			export PENZSH_TARGET=$(cat $PENZSH_DIR_META/target)
+			export PENZSH_OS=$(cat $PENZSH_DIR_META/os)
+		else
+			export PENZSH_TARGET=$(cat $PENZSH_DIR_META/target
+			export PENZSH_OS=$(cat $PENZSH_DIR_META/os
+		fi
+
+		export PENZSH_RHOST=${PENZSH_TARGET}
+		export PENZSH_LHOST=${$(ip route get $PENZSH_RHOST | awk '{print $7}'):-0.0.0.0}
+		export pzip=$PENZSH_TARGET
+		fc -p $PENZSH_DIR_META/history
+	fi
 }
 update_current_penzsh_vars
 
@@ -81,18 +108,18 @@ function penzsh() {
 			penzsh_echo "Currently in a penzsh project for $PENZSH_TARGET!"
 			penzsh_echo "penzsh does not support sub-projects!"
 			;;
-		flag)
+		flag)I
 			case $2 in
 			os:win*)
-				echo windows > $PENZSH_DIR/.penzsh/os
+				echo windows > $PENZSH_DIR_META/os
 				penzsh_echo "Now treating target as a Windows machine."
 				;;
 			os:lin*)
-				echo linux > $PENZSH_DIR/.penzsh/os
+				echo linux > $PENZSH_DIR_META/os
 				penzsh_echo "Now treating target as a Linux machine."
 				;;
 			os:freebsd|os:bsd)
-				echo bsd > $PENZSH_DIR/.penzsh/os
+				echo bsd > $PENZSH_DIR_META/os
 				penzsh_echo "Now treating target as a FreeBSD machine."
 				;;
 			*)
@@ -102,24 +129,24 @@ function penzsh() {
 			update_current_penzsh_vars
 			;;
 		note)
-			echo "$(date -u +\[%Y-%b-%d\ %T\ UTC\]) > ${@:2}" >> $PENZSH_DIR/.penzsh/notes
+			echo "$(date -u +\[%Y-%b-%d\ %T\ UTC\]) > ${@:2}" >> $PENZSH_DIR_META/notes
 			;;
 		notes)
-			less $PENZSH_DIR/.penzsh/notes
+			less $PENZSH_DIR_META/notes
 			;;
 		todo)
 			# fix for empty lines if someone just does `pz todo`
 			if [ "$#" -ne 1 ]
 			then
-				echo "${@:2}" >> $PENZSH_DIR/.penzsh/todo
+				echo "${@:2}" >> $PENZSH_DIR_META/todo
 			fi
 			;;
 		todos)
-			cat -n $PENZSH_DIR/.penzsh/todo
+			cat -n $PENZSH_DIR_META/todo
 			;;
 		todone)
 			local TODO_N=$(($2+0))
-			local TODO_TASK=`sed -n "${TODO_N}p;" $PENZSH_DIR/.penzsh/todo 2>/dev/null`
+			local TODO_TASK=`sed -n "${TODO_N}p;" $PENZSH_DIR_META/todo 2>/dev/null`
 			if [ -z "$TODO_TASK" ] ; then
 				penzsh_echo "There aren't that many tasks!"
 			else
@@ -127,7 +154,7 @@ function penzsh() {
 				read -q "REPLY?(y/n): "
 				echo ""
 				if [ $REPLY = "y" ] ; then
-					sed -i "${TODO_N}d;" $PENZSH_DIR/.penzsh/todo
+					sed -i "${TODO_N}d;" $PENZSH_DIR_meta/todo
 					penzsh note "Completed todo: ${TODO_TASK}"
 					penzsh_echo "Todo removed!"
 				else
@@ -175,7 +202,7 @@ function penzsh() {
 				source $PENZSH_CMD_DIR/$1
 				penzsh_cmd_do ${@:2}
 			else
-				echo -e "Following commands currently supported:"
+				echo -e "Following are currently supported:"
 				#echo -e "\tanalyze <file> - Analyze a file"
 				echo -e "\tcmds           - List vailable custom/tool commands"
 				echo -e "\tcreate         - Make the current direction a penzsh project"
@@ -188,8 +215,12 @@ function penzsh() {
 				echo -e "\ttodo           - Remind yourself of something"
 				echo -e "\ttodos          - See what you need to do for this target"
 				echo -e "\tupdate         - Updates the penzsh project, ONLY IF YOU GIT CLONED IT!"
+
+				if ( $PENZSH_PROXY_NET ) ; then
+				fi
+
 				echo -e ""
-				echo -e "To use cmds:"
+				echo -e "========== C O M M A N D S =========="
 				echo -e "\tinfo <cmd>     - Shows brief info of command and prints command definition"
 				echo -e "\t<cmd>          - Runs contextual command"
 				echo -e ""
