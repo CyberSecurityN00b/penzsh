@@ -187,6 +187,18 @@ function penzsh() {
 				penzsh cmds
 			fi
 			;;
+		proxyhostnew)
+			if [ $PENZSH_PROXY_NET && !$PENZSH_PROXY_HOST ] ; then
+			else
+				penzsh_warn "This command is only available while in 'proxy_nets'!"
+			fi
+			;;
+		proxyhostenum)
+			if [ $PENZSH_PROXY_NET && !$PENZSH_PROXY_HOST ] ; then
+			else
+				penzsh_warn "This command is only available while in 'proxy_nets'!"
+			fi
+			;;
 		cmds)
 			echo "Custom Commands:"
 			ls $PENZSH_CUSTCMD_DIR
@@ -215,11 +227,15 @@ function penzsh() {
 				echo -e "\ttodo           - Remind yourself of something"
 				echo -e "\ttodos          - See what you need to do for this target"
 				echo -e "\tupdate         - Updates the penzsh project, ONLY IF YOU GIT CLONED IT!"
+				echo -e ""
 
-				if ( $PENZSH_PROXY_NET ) ; then
+				if [ $PENZSH_PROXY_NET && !$PENZSH_PROXY_HOST ] ; then
+					echo -e "========== PROXY NETWORK =========="
+					echo -e "\tproxyhostnew   - Creates single proxy-host directory."
+					echo -e "\tproxyhostenum  - Creates proxy-host directories after host enumeration."
+					echo -e ""
 				fi
 
-				echo -e ""
 				echo -e "========== C O M M A N D S =========="
 				echo -e "\tinfo <cmd>     - Shows brief info of command and prints command definition"
 				echo -e "\t<cmd>          - Runs contextual command"
