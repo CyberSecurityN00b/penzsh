@@ -9,9 +9,9 @@ function penzsh_cmd_do()
 		read "REPLY?Enter port of service: "
 		pzcore_func_is_ssl ${pzcore_target}:$REPLY
                 if [ "$?" = 0 ] ; then
-			gobuster dir --url=http://${pzcore_target}:$REPLY/ --wordlist ${PENZSH_WORDLIST_WEBENUM} ${@:1} -o $pzcore_dir_enum/gobuster/http-$REPLY.$pzcore_timestamp.dirb
+			$pzcore_cmds_prefix gobuster dir --url=http://${pzcore_target}:$REPLY/ --wordlist ${PENZSH_WORDLIST_WEBENUM} ${@:1} -o $pzcore_dir_enum/gobuster/http-$REPLY.$pzcore_timestamp.dirb
 		else
-			gobuster dir --url= https://${pzcore_target}:$REPLY/ --wordlist ${PENZSH_WORDLIST_WEBENUM} ${@:1} -o $pzcore_dir_enum/gobuster/https-$REPLY.$pzcore_timestamp.dirb
+			$pzcore_cmds_prefix gobuster dir --url= https://${pzcore_target}:$REPLY/ --wordlist ${PENZSH_WORDLIST_WEBENUM} ${@:1} -o $pzcore_dir_enum/gobuster/https-$REPLY.$pzcore_timestamp.dirb
 		fi
 	fi
 }

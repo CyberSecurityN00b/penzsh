@@ -6,7 +6,7 @@ function penzsh_cmd_do()
 	pzcore_func_require "which enum4linux" "sudo apt-get install enum4linux"
 	if [ "$?" = 0 ] ; then
 		mkdir -p $pzcore_dir_enum/enum4linux
-		enum4linux ${@:1} $pzcore_target | tee $pzcore_dir_enum/enum4linux/custom.$pzcore_timestamp.e4l
+		$pzcore_cmds_prefix enum4linux ${@:1} $pzcore_target | tee $pzcore_dir_enum/enum4linux/custom.$pzcore_timestamp.e4l
 	fi
 }
 

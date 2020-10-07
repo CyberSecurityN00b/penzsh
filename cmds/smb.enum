@@ -6,7 +6,7 @@ function penzsh_cmd_do()
 	pzcore_func_require "which smbmap" "sudo apt-get install smbmap"
 	if [ "$?" = 0 ] ; then
 		mkdir -p $pzcore_dir_enum/smb
-		smbmap -H $pzcore_target -R ${@:1} $pzcore_dir_enum/smb/smbmap.listfiles.$pzcore_timestamp
+		$pzcore_cmds_prefix smbmap -H $pzcore_target -R ${@:1} $pzcore_dir_enum/smb/smbmap.listfiles.$pzcore_timestamp
 	fi
 }
 

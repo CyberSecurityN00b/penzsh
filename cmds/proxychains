@@ -1,0 +1,12 @@
+#!/bin/bash
+source $PENZSH_CMD_DIR/.core
+
+function penzsh_cmd_do()
+{
+	$pzcore_cmds_prefix ${@:1}
+}
+
+function penzsh_cmd_info()
+{
+	echo -e "Run commands via the appropriate penzsh proxychains configuration file. If not in a proxy host, just runs the command like normal."
+}

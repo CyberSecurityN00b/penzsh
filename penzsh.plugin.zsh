@@ -35,7 +35,7 @@ function prompt_penzsh() {
 		*) pzsh_icon="VCS_UNTRACKED_ICON";;
 		esac
 
-		if [[ ! -f $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxy_pid ]] ; then
+		if [[ -f $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/target && ! -f $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxy_pid ]] ; then
 			pzsh_text="${PENZSH_TARGET} !!! PROXY DOWN !!!"
 		elif ( $PENZSH_PROXY_HOST ) ; then
 			pzsh_text="${PENZSH_TARGET}(<[proxy]>${PENZSH_PROXY_NET_TARGET}<[proxy]>${PENZSH_TARGET})"
@@ -57,10 +57,13 @@ alias pz=penzsh
 
 ## Function Definitions
 function update_current_penzsh_vars() {
-	# Are we in a penzsh project?
+	for var in $(env | egrep "^PENZSH" | cut -d= -f1) ; do
+		unset ${var}
+	done
 	export PENZSH=false
 	export PENZSH_PROXY_NET=false
 	export PENZSH_PROXY_HOST=false
+	# Are we in a penzsh project?
 	fc -P
 	local x=`pwd`
 	while [ "$x" != "/" ] ; do
@@ -68,6 +71,7 @@ function update_current_penzsh_vars() {
 			export PENZSH=true
 			export PENZSH_DIR=$x
 			export PENZSH_DIR_META=$x/.penzsh
+			export PENZSH_FIRST=$x
 			export PENZSH_FIRST_TARGET=$x/.penzsh/target
 			break
 		elif [ `find "$x" -maxdepth 1 -name .penzsh_proxy_net -type d 2>/dev/null` ] ; then
@@ -270,6 +274,14 @@ function penzsh() {
 			fi
 			;;
 		proxynew)
+			mkdir -p "$PENZSH_FIRST_DIR/proxy_nets"
+			read "network?What is the network on the other side of the proxy (i.e., 10.10.10.0/24)? "
+			mkdir -p "$PENZSH_FIRST_DIR/proxy_nets/$network"
+			cp $PENZSH_HOME_DIR/proxytemplate $PENZSH_FIRST_DIR/proxy_nets/$network/.penzsh_proxy_net/proxy.sh
+			chmod +x $PENZSH_FIRST_DIR/proxy_nets/$network/.penzsh_proxy_net/proxy.sh
+			$PENZSH_PROGRAM_EDITOR $PENZSH_FIRST_DIR/proxy_nets/$network/.penzsh_proxy_net/proxy.sh
+			penzsh_echo "Hopefully you're good to go!"
+			penzsh_echo "Make sure to 'cd $(realpath --relative-to=. $PENZSH_FIRST_DIR/proxy_nets/$network)' and run 'pz proxystart'!"
 			;;
 		cmds)
 			echo "Custom Commands:"
@@ -281,7 +293,7 @@ function penzsh() {
 		*)
 			if [ -f $PENZSH_CUSTCMD_DIR/$1 ]; then
 				source $PENZSH_CUSTCMD_DIR/$1
-				if ( $PENZSH_PROXY_NET ) ; THEN
+				if ( $PENZSH_PROXY_NET ) ; then
 					proxychains penzsh_cmd_do ${@:2}
 				else
 					penzsh_cmd_do ${@:2}
