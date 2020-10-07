@@ -5,13 +5,13 @@ function penzsh_cmd_do()
 {
 	pzcore_func_require "which whatweb" "sudo apt-get install whatweb"
 	if [ "$?" = 0 ] ; then
-		mkdir -p $pzcore_dir_enum/whatweb
+		mkdir -p $pzcore_dir_enum/web
 		read "REPLY?Enter port of service: "
 		pzcore_func_is_ssl ${pzcore_target}:$REPLY
                 if [ "$?" = 0 ] ; then
-			whatweb http://${pzcore_target}:$REPLY/ | tee $pzcore_dir_enum/whatweb/http-$REPLY.$pzcore_timestamp.whatweb
+			whatweb http://${pzcore_target}:$REPLY/ | tee $pzcore_dir_enum/web/whatweb-http-$REPLY.$pzcore_timestamp.txt
 		else
-			whatweb https://${pzcore_target}:$REPLY/ | tee $pzcore_dir_enum/whatweb/https-$REPLY.$pzcore_timestamp.whatweb
+			whatweb https://${pzcore_target}:$REPLY/ | tee $pzcore_dir_enum/web/whatweb-https-$REPLY.$pzcore_timestamp.txt
 		fi
 	fi
 }

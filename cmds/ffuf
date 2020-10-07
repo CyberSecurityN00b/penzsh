@@ -5,13 +5,13 @@ function penzsh_cmd_do()
 {
 	pzcore_func_require "which ffuf" "sudo apt-get install ffuf"
 	if [ "$?" = 0 ] ; then
-		mkdir -p $pzcore_dir_enum/ffuf
+		mkdir -p $pzcore_dir_enum/web
 		read "REPLY?Enter port of service: "
 		pzcore_func_is_ssl ${pzcore_target}:$REPLY
                 if [ "$?" = 0 ] ; then
-			ffuf -u http://${pzcore_target}:$REPLY/FUZZ -w ${PENZSH_WORDLIST_WEBENUM} ${@:1} -o $pzcore_dir_enum/ffuf/http-$REPLY.$pzcore_timestamp.dirb
+			ffuf -u http://${pzcore_target}:$REPLY/FUZZ -w ${PENZSH_WORDLIST_WEBENUM} ${@:1} -o $pzcore_dir_enum/web/ffuf-http-$REPLY.$pzcore_timestamp.txt
 		else
-			ffuf -u https://${pzcore_target}:$REPLY/FUZZ -w ${PENZSH_WORDLIST_WEBENUM} ${@:1} -o $pzcore_dir_enum/ffuf/https-$REPLY.$pzcore_timestamp.dirb
+			ffuf -u https://${pzcore_target}:$REPLY/FUZZ -w ${PENZSH_WORDLIST_WEBENUM} ${@:1} -o $pzcore_dir_enum/web/ffuf-https-$REPLY.$pzcore_timestamp.txt
 		fi
 	fi
 }

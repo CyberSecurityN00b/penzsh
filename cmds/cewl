@@ -5,13 +5,13 @@ function penzsh_cmd_do()
 {
 	pzcore_func_require "which cewl" "sudo apt-get install cewl"
 	if [ "$?" = 0 ] ; then
-		mkdir -p $pzcore_dir_enum/cewl
+		mkdir -p $pzcore_dir_enum/wordlists
 		read "REPLY?Enter port of service: "
 		pzcore_func_is_ssl ${pzcore_target}:$REPLY
 		if [ "$?" = 0 ] ; then
-			cewl ${@:1} -w $pzcore_dir_enum/cewl/http-$REPLY-$pzcore_timestamp.cewl http://${pzcore_target}:$REPLY
+			cewl ${@:1} -w $pzcore_dir_enum/wordlists/cewl-http-$REPLY-$pzcore_timestamp.cewl http://${pzcore_target}:$REPLY
 		else
-			cewl ${@:1} -w $pzcore_dir_enum/cewl/https-$REPLY-$pzcore_timestamp.cewl https://${pzcore_target}:$REPLY
+			cewl ${@:1} -w $pzcore_dir_enum/wordlists/cewl-https-$REPLY-$pzcore_timestamp.cewl https://${pzcore_target}:$REPLY
 		fi
 	fi
 }

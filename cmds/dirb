@@ -5,13 +5,13 @@ function penzsh_cmd_do()
 {
 	pzcore_func_require "which dirb" "sudo apt-get install dirb"
 	if [ "$?" = 0 ] ; then
-		mkdir -p $pzcore_dir_enum/dirb
+		mkdir -p $pzcore_dir_enum/web
 		read "REPLY?Enter port of service: "
 		pzcore_func_is_ssl ${pzcore_target}:$REPLY
                 if [ "$?" = 0 ] ; then
-			dirb http://${pzcore_target}:$REPLY/ ${PENZSH_WORDLIST_WEBENUM} ${@:1} -o $pzcore_dir_enum/dirb/http-$REPLY.$pzcore_timestamp.dirb
+			dirb http://${pzcore_target}:$REPLY/ ${PENZSH_WORDLIST_WEBENUM} ${@:1} -o $pzcore_dir_enum/web/dirb-http-$REPLY.$pzcore_timestamp.txt
 		else
-			dirb https://${pzcore_target}:$REPLY/ ${PENZSH_WORDLIST_WEBENUM} ${@:1} -o $pzcore_dir_enum/dirb/https-$REPLY.$pzcore_timestamp.dirb
+			dirb https://${pzcore_target}:$REPLY/ ${PENZSH_WORDLIST_WEBENUM} ${@:1} -o $pzcore_dir_enum/web/dirb-https-$REPLY.$pzcore_timestamp.txt
 		fi
 	fi
 }
