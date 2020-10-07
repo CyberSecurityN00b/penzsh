@@ -1,0 +1,17 @@
+#!/bin/bash
+source $PENZSH_CMD_DIR/.core
+
+function penzsh_cmd_do()
+{
+	pzcore_func_require "which nikto" "sudo apt-get install nikto"
+	if [ "$?" = 0 ] ; then
+		mkdir -p $pzcore_dir_enum/nikto
+		read "REPLY?Enter port of service: "
+		nikto -host $pzcore_target ${@:1} -port $REPLY | tee $pzcore_dir_enum/nikto/nikto-$REPLY.$pzcore_timestamp
+	fi
+}
+
+function penzsh_cmd_info()
+{
+	echo -e "Performs nikto web vulnerability scan."
+}
