@@ -5,7 +5,7 @@ function penzsh_cmd_do()
 {
 	pzcore_func_require "which msfconsole" "return 1 #Automated install of msfconsole not yet supported"
 	if [ "$?" = 0 ] ; then
-		msfdb init
+		sudo msfdb init
 		read "REPLY?Metasploit Workspace: "
 		msfconsole -q -x "workspace -a $REPLY;db_import $pzcore_dir_enum/nmap/*.xml;setg RHOST $pzcore_target;setg RHOSTS $pzcore_target;use exploit/multi/handler;setg LHOST $pzcore_lhost;set ExitOnSession False;set payload generic/shell_reverse_tcp;show options"
 	fi
