@@ -64,10 +64,59 @@ pzcore_func_validate_filename()
 pzcore_func_is_ssl()
 {
 	# $1 - URL with port, i.e., 10.10.10.10:80 or google.com:443
-	echo "Q" | openssl s_client -quiet -connect $1 2>/dev/null
+	echo "Q" | $pzcore_cmds_prefix openssl s_client -quiet -connect $1 2>/dev/null
 	if [ "$?" = 1 ] ; then
 		return 0
 	else
 		return 1
+	fi
+}
+
+pzcore_func_sudo()
+{
+	if [[ $UID != 0 && $EUID != 0 ]] ; then
+		# Not root
+		pzcore_func_echo "The following command is requesting elevated privileges:"
+		echo ${@:1}
+	fi
+	eval "sudo ${@:1}"
+}
+
+###############################################################################
+# Proxy Specific stuff...
+pzcore_proxy=$PENZSH_PROXY_NET
+pzcore_proxy_host=$PENZSH_PROXY_HOST
+pzcore_proxy_type=$(cat $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxysave_type 2>/dev/null)
+pzcore_func_proxycmd ()
+{
+	if ( $pzcore_proxy ) ; then
+	    pzcore_func_require "which proxychains4" "sudo apt-get install proxychains4"
+	    if [ "$?" = 0 ] ; then
+		    proxychains4 -q -f $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxychains.conf ${@:1}
+	    else
+		    pzcore_func_warn "Unable to continue with proxied command."
+		    exit
+	    fi
+	else
+		${@:1}
+	fi
+}
+pzcore_func_proxycmd_sudo ()
+{
+	if [[ $UID != 0 && $EUID != 0 ]] ; then
+		# Not root
+		pzcore_func_echo "The following command is requesting elevated privileges through a proxy connection:"
+		echo ${@:1}
+	fi
+	if ( $pzcore_proxy ) ; then
+	    pzcore_func_require "which proxychains4" "sudo apt-get install proxychains4"
+	    if [ "$?" = 0 ] ; then
+		    sudo proxychains4 -q -f $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxychains.conf ${@:1}
+	    else
+		    pzcore_func_warn "Unable to continue with proxied command."
+		    exit
+	    fi
+	else
+		sudo ${@:1}
 	fi
 }

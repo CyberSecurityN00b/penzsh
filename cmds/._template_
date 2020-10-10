@@ -3,6 +3,16 @@ source $PENZSH_CMD_DIR/.core
 
 function penzsh_cmd_do()
 {
+	# TODO: Update [tool] as needed
+	pzcore_func_require "which [tool]" "sudo apt-get install [tool]"
+	if [ "$?" = 0 ] ; then
+		if ( $pzcore_proxy ) ; then
+			# Command is running over a proxy, handle accordingly.
+			pzcore_func_proxycmd "[cmd stuff here]"
+		else
+			# Command is not running over a proxy.
+		fi
+	fi
 }
 
 function penzsh_cmd_info()
