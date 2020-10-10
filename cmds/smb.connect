@@ -1,0 +1,33 @@
+#!/bin/bash
+source $PENZSH_CMD_DIR/.core
+
+function penzsh_cmd_do()
+{
+	pzcore_func_require "which smbclient" "sudo apt-get install smbclient"
+	if [ "$?" = 0 ] ; then
+		mkdir -p $pzcore_dir_loot/smb
+		local pz_cmd_share=""
+		local pz_cmd_arguments=""
+		if [ $1 ] ; then
+			pz_cmd_share=$1
+			pz_cmd_arguments="${@:2}"
+		else
+			read "share?What share to connect to? "
+			pz_cmd_share=$share
+			pz_cmd_arguments="${@:1}"
+		fi
+		echo "Connecting to Share $pz_cmd_share..."
+		cd $pzcore_dir_loot/smb
+		smbclient \\\\$pzip\\$pz_cmd_share $pz_cmd_arguments
+		cd -
+	fi
+}
+
+function penzsh_cmd_info()
+{
+	echo -e "Connects to SMB share."
+	echo -e "Usage:"
+	echo -e "\tpz smb.connect"
+	echo -e "\tpz smb.connect share_name"
+	echo -e "\tpz smb.connect share_name -U user_name"
+}

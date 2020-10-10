@@ -5,7 +5,7 @@ function penzsh_cmd_do()
 {
 	pzcore_func_require "which gobuster" "sudo apt-get install gobuster"
 	if [ "$?" = 0 ] ; then
-		mkdir -p $pzcore_dir_enum/gobuster
+		mkdir -p $pzcore_dir_enum/web
 		read "REPLY?Enter port of service: "
 		pzcore_func_is_ssl ${pzcore_target}:$REPLY
                 if [ "$?" = 0 ] ; then
