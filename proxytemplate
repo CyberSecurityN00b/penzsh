@@ -26,7 +26,8 @@ pz_proxy_type="socks5"
 pz_proxy_method="ssh_1"
 
 ##### USE CAUTION MODIFYING ANYTHING THE BELOW ################################
-func pz_proxy_save {
+func pz_proxy_save()
+{
 	#1 - File
 	#2 - Data
 	echo $2 > $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxysave_$1
