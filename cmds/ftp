@@ -7,7 +7,7 @@ function penzsh_cmd_do()
 	if [ "$?" = 0 ] ; then
 		mkdir -p $pzcore_dir_loot/ftp
 		cd $pzcore_dir_loot/ftp
-		$pzcore_cmds_prefix ftp $pzcore_target ${@:1}
+		$pzcore_proxy_prefix ftp $pzcore_target ${@:1}
 		cd -
 	fi
 }

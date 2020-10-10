@@ -12,21 +12,6 @@ pzcore_timestamp=$(date +%Y-%m-%d.%H:%M:%S)
 
 pzcore_lhost=$PENZSH_LHOST
 
-pzcore_cmds_prefix=""
-if ( $PENZSH_PROXY_NET ) ; then
-	if [ -f "$pzcore_dir_tools/proxychains/proxychains" ] ; then
-		pzcore_cmds_prefix = "$pzcore_dir_tools/proxychains/proxychains -f $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxychains.conf "
-	else
-		pzcore_func_warn "Proxychains not installed to $pzcore_dir_tools!"
-		pzcore_func_yesno "Install latest proxychains to $pzcore_dir_tools?"
-		if [ $REPLY = "y" ] ; then
-			pzcore_func_tools_proxychains
-		else
-			pzcore_func_warn "Unable to continue with proxied command."
-		fi
-	fi
-fi
-
 ### COLORS ####################################################################
 PZCORE_COLOR_OFF='\033[0m'
 PZCORE_COLOR_RED='\033[0;31m'
@@ -34,20 +19,6 @@ PZCORE_COLOR_GREEN='\033[0;32m'
 
 PZCORE_COLOR_NORMAL=$PZCORE_COLOR_GREEN
 PZCORE_COLOR_WARNING=$PZCORE_COLOR_RED
-###############################################################################
-
-### TOOLS #####################################################################
-pzcore_func_tools_proxychains()
-{
-	mkdir -p $pzcore_dir_tools/proxychains
-	git clone https://github.com/haad/proxychains.git "$pzcore_dir_tools/proxychains"
-	CFLAGS=-Wno-error $pzcore_dir_tools/proxychains/configure
-	make -C "$pzcore_dir_tools/proxychains"
-	# Built when it was proxychains4, but why not...
-	mv "$pzcore_dir_tools/proxychains4" "$pzcore_dir_tools/proxychains" 2>/dev/null
-	mv "$pzcore_dir_tools/proxychains5" "$pzcore_dir_tools/proxychains" 2>/dev/null
-	mv "$pzcore_dir_tools/proxychains6" "$pzcore_dir_tools/proxychains" 2>/dev/null
-}
 ###############################################################################
 
 pzcore_func_echo()
@@ -100,3 +71,29 @@ pzcore_func_is_ssl()
 		return 1
 	fi
 }
+
+pzcore_func_sudo()
+{
+	if [[ $UID != 0 && $EUID != 0 ]] ; then
+		# Not root
+		pzcore_func_echo "The following command is requesting elevated privileges:"
+		echo ${@:1}
+	fi
+	eval "sudo ${@:1}"
+}
+
+###############################################################################
+# Proxy Specific stuff...
+pzcore_proxy=$PENZSH_PROXY_NET
+pzcore_proxy_host=$PENZSH_PROXY_HOST
+pzcore_proxy_type=""
+pzcore_proxy_prefix=""
+if ( $pzcore_proxy ) ; then
+    pzcore_func_require "which proxychains4" "sudo apt-get install proxychains4"
+    if [ "$?" = 0 ] ; then
+		pzcore_proxy_prefix="proxychains4 -f $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxychains.conf "
+	else
+		pzcore_func_warn "Unable to continue with proxied command."
+		exit
+	fi
+fi

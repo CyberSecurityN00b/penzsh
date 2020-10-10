@@ -3,12 +3,16 @@ source $PENZSH_CMD_DIR/.core
 
 function penzsh_cmd_do()
 {
-	pzcore_func_require "which python3" "sudo apt-get install python3"
-	if [ "$?" = 0 ] ; then
-		mkdir -p $pzcore_dir_server
-		cd $pzcore_dir_server
-		python3 -m http.server
-		cd -
+	if ( $pzcore_proxy ) ; then
+		pzcore_func_warn "No support for running pz server over a proxychain!"
+	else
+		pzcore_func_require "which python3" "sudo apt-get install python3"
+		if [ "$?" = 0 ] ; then
+			mkdir -p $pzcore_dir_server
+			cd $pzcore_dir_server
+			python3 -m http.server
+			cd -
+		fi
 	fi
 }
 

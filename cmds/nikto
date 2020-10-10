@@ -7,7 +7,7 @@ function penzsh_cmd_do()
 	if [ "$?" = 0 ] ; then
 		mkdir -p $pzcore_dir_enum/nikto
 		read "REPLY?Enter port of service: "
-		$pzcore_cmds_prefix nikto -host $pzcore_target ${@:1} -port $REPLY | tee $pzcore_dir_enum/nikto/nikto-$REPLY.$pzcore_timestamp
+		$pzcore_proxy_prefix nikto -host $pzcore_target ${@:1} -port $REPLY | tee $pzcore_dir_enum/nikto/nikto-$REPLY.$pzcore_timestamp
 	fi
 }
 

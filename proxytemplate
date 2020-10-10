@@ -1,0 +1,69 @@
+#!/bin/bash
+##### PENZSH PROXY CONFIGURATION ##############################################
+# Configure the following options as is appropriate for your proxy setup needs
+
+# PROMPT: What is the local port you want to use?
+pz_proxy_local_port="42001"
+
+# PROMPT: What is the remote target?
+pz_proxy_target="___TARGET___"
+pz_proxy_port="22"
+
+# PROMPT: What username, if any, should be used?
+pz_proxy_username="root"
+
+# PROMPT: What password, if any, should be used?
+#         (Leave blank to be prompted each time, for security.)
+pz_proxy_password=""
+
+# PROMPT: What type of proxy (socks4, socks5, http)?
+pz_proxy_type="socks5"
+
+# PROMPT: Which method should be used to create the proxy?
+# OPTIONS:
+#	ssh_1 - Connects to ssh to create a proxy
+#	custom - Build your custom proxy commands below
+pz_proxy_method="ssh_1"
+
+##### USE CAUTION MODIFYING ANYTHING THE BELOW ################################
+func pz_proxy_save {
+	#1 - File
+	#2 - Data
+	echo $2 > $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxysave_$1
+}
+pz_proxy_save "local_port" "$pz_proxy_local_port"
+pz_proxy_save "target" "$pz_proxy_target"
+pz_proxy_save "port" "$pz_proxy_port"
+pz_proxy_save "type" "$pz_proxy_type"
+pz_proxy_save "method" "$pz_proxy_method"
+##### Proxychains Configuration Generation
+proxyconf="$PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxychains.conf"
+cat << EOF > ${proxyconf}
+strict_chain
+proxy_dns
+tcp_read_time_out 15000
+tcp_connect_time_out 8000
+[ProxyList]
+EOF
+
+case $pz_proxy_method in
+	custom)
+		## TODO: Put your custom proxy method here!
+		##	Make sure it runs in the background...
+
+		## TODO: Append to the proxychains file!
+		echo "Configure me..." >> ${proxyconf}
+		;;
+	ssh_1)
+		echo "Password: $pz_proxy_password"
+		ssh -f -N -D 127.0.0.1:$pz_proxy_local_port $pz_proxy_username@$pz_proxy_target -p $pz_proxy_port -o ExitOnForwardFailure=yes
+		
+		# proxychains
+		echo -e "$pz_proxy_type\t127.0.0.1\t$pz_proxy_local_port" >> ${proxyconf}
+		;;
+	*)
+		echo 'WARNING! Unknown proxy method, no proxy built!'
+		;;
+esac
+
+# Save some information for later use

@@ -35,12 +35,12 @@ function prompt_penzsh() {
 		*) pzsh_icon="VCS_UNTRACKED_ICON";;
 		esac
 
-		if [[ -f $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/target && ! -f $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxy_pid ]] ; then
-			pzsh_text="${PENZSH_TARGET} !!! PROXY DOWN !!!"
-		elif ( $PENZSH_PROXY_HOST ) ; then
-			pzsh_text="${PENZSH_TARGET}(<[proxy]>${PENZSH_PROXY_NET_TARGET}<[proxy]>${PENZSH_TARGET})"
+#		if [[ -f $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/target && ! -f $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxy_pid ]] ; then
+#			pzsh_text="${PENZSH_TARGET}::PROXY_DOWN"
+		if ( $PENZSH_PROXY_HOST ) ; then
+			pzsh_text="${PENZSH_TARGET}::${PENZSH_FIRST_TARGET}"
 		elif ( $PENZSH_PROXY_NET ) ; then
-			pzsh_text="${PENZSH_PROXY_NET_TARGET}(<[proxy]>${PENZSH_TARGET})"
+			pzsh_text="${PENZSH_PROXY_NET_TARGET}::${PENZSH_FIRST_TARGET}"
 		else
 			pzsh_text="${PENZSH_TARGET}"
 		fi
@@ -57,7 +57,7 @@ alias pz=penzsh
 
 ## Function Definitions
 function update_current_penzsh_vars() {
-	for var in $(env | egrep "^PENZSH" | cut -d= -f1) ; do
+	for var in $(env | egrep "^PENZSH_PROXY" | cut -d= -f1) ; do
 		unset ${var}
 	done
 	export PENZSH=false
@@ -71,13 +71,13 @@ function update_current_penzsh_vars() {
 			export PENZSH=true
 			export PENZSH_DIR=$x
 			export PENZSH_DIR_META=$x/.penzsh
-			export PENZSH_FIRST=$x
-			export PENZSH_FIRST_TARGET=$x/.penzsh/target
+			export PENZSH_FIRST_DIR=$x
+			export PENZSH_FIRST_TARGET=$(cat $x/.penzsh/target)
 			break
 		elif [ `find "$x" -maxdepth 1 -name .penzsh_proxy_net -type d 2>/dev/null` ] ; then
 			export PENZSH_PROXY_NET=true
 			export PENZSH_PROXY_NET_DIR=$x
-			export PENZSH_PROXY_NET_TARGET=$x/.penzsh_proxy_net/target
+			export PENZSH_PROXY_NET_TARGET=$(cat $x/.penzsh_proxy_net/target)
 		elif [ `find "$x" -maxdepth 1 -name .penzsh_proxy_host -type d 2>/dev/null` ] ; then
 			export PENZSH_PROXY_HOST=true
 			export PENZSH_PROXY_HOST_DIR=$x
@@ -102,7 +102,7 @@ function update_current_penzsh_vars() {
 		fi
 
 		export PENZSH_RHOST=${PENZSH_TARGET}
-		export PENZSH_LHOST=${$(ip route get $PENZSH_RHOST | awk '{print $7}'):-0.0.0.0}
+		export PENZSH_LHOST=${$(ip route get $PENZSH_RHOST 2>/dev/null | awk '{print $7}'):-0.0.0.0}
 		export pzip=$PENZSH_TARGET
 		fc -p $PENZSH_DIR_META/history
 	fi
@@ -111,6 +111,26 @@ update_current_penzsh_vars
 
 function penzsh_echo() {
 	echo "PENZSH >>> ${@}"
+}
+
+# stolen from cmds/.core ...
+function pzcore_func_require()
+{
+	# $1 - String used to check existence of requirement
+	# $2 - String used to install necessary requirement
+	
+	eval "$1 >/dev/null 2>&1"
+	if [ "$?" = 1 ] ; then
+		pzcore_echo "This command is missing a requirement!"
+		pzcore_echo "Should I run the following to fulfill this requirement?\n\t$2"
+		read "REPLY?(y/n): "
+		if [[ $REPLY =~ ^[Yy]$ ]] ; then
+			eval "$2"
+		else
+			pzcore_echo "FAILED to run command without requirement!"
+			return 1
+		fi
+	fi
 }
 
 function penzsh_cmd_do(){}
@@ -225,7 +245,7 @@ function penzsh() {
 			fi
 			;;
 		proxyhostnew)
-			if [ $PENZSH_PROXY_NET && !$PENZSH_PROXY_HOST ] ; then
+			if [[ $PENZSH_PROXY_NET && !$PENZSH_PROXY_HOST ]] ; then
 				local pz_c_target=""
 
 				if [ $2 ] ; then
@@ -237,51 +257,63 @@ function penzsh() {
 
 				penzsh_create_host_dir "$(pwd)/$pz_c_target" "$pz_c_target"
 			else
-				penzsh_warn "This command is only available in immediate 'proxy_nets' subfolders!"
+				penzsh_echo "This command is only available in immediate 'proxy_nets' subfolders!"
 			fi
 			;;
 		proxyhostenum)
-			if [ $PENZSH_PROXY_NET && !$PENZSH_PROXY_HOST ] ; then
+			if [[ $PENZSH_PROXY_NET && !$PENZSH_PROXY_HOST ]] ; then
 				penzsh_echo "Performing basic host discovery, standby..."
-				for host in $(nmap -sn $PENZSH_PROXY_NET_TARGET -oG - | grep "Status: Up" | awk '{print $2}') ; do
-					penzsh_create_host_dir "$PENZSH_PROXY_NET_DIR/$host" "$host"
-				done
-				penzsh_echo "Basic host discovery completed. NOTE: Not all hosts may have been discovered!"
+				pzcore_func_require "which proxychains4" "sudo apt-get install proxychains4"
+				if [ "$?" = 0 ] ; then
+					for host in $(sudo proxychains4 -f $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxychains.conf nmap -n -sT -Pn $PENZSH_PROXY_NET_TARGET -oG - | grep "Status: Up" | awk '{print $2}') ; do
+						penzsh_create_host_dir "$PENZSH_PROXY_NET_DIR/$host" "$host"
+					done
+					penzsh_echo "Basic host discovery completed. NOTE: Not all hosts may have been discovered!"
+				else
+					penzsh_echo "Unable to comply, need proxychains4 to continue."
+				fi
 			else
-				penzsh_warn "This command is only available in immediate 'proxy_nets' subfolders!"
+				penzsh_echo "This command is only available in immediate 'proxy_nets' subfolders!"
 			fi
 			;;
 		proxyconfig)
-			if [ $PENZSH_PROXY_NET && !$PENZSH_PROXY_HOST ] ; then
+			if [[ $PENZSH_PROXY_NET && !$PENZSH_PROXY_HOST ]] ; then
 				$PENZSH_PROGRAM_EDITOR $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxy.sh
 			else
-				penzsh_warn "This command is only available in immediate 'proxy_nets' subfolders!"
+				penzsh_echo "This command is only available in immediate 'proxy_nets' subfolders!"
 			fi
 			;;
 		proxystart)
-			if [ $PENZSH_PROXY_NET && !$PENZSH_PROXY_HOST ] ; then
-				$PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxy.sh &
-				echo $! > $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxy_pid
+			if [[ $PENZSH_PROXY_NET && !$PENZSH_PROXY_HOST ]] ; then
+				$PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxy.sh
 			else
-				penzsh_warn "This command is only available in immediate 'proxy_nets' subfolders!"
+				penzsh_echo "This command is only available in immediate 'proxy_nets' subfolders!"
 			fi
 			;;
-		proxystop)
-			if [ $PENZSH_PROXY_NET && !$PENZSH_PROXY_HOST ] ; then
-				kill $(cat $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxy_pid)
-			else
-				penzsh_warn "This command is only available in immediate 'proxy_nets' subfolders!"
-			fi
-			;;
+#		proxystop)
+#			if [[ $PENZSH_PROXY_NET && !$PENZSH_PROXY_HOST ]] ; then
+#				kill $(cat $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxy_pid)
+#				rm $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxy_pid
+#			else
+#				penzsh_echo "This command is only available in immediate 'proxy_nets' subfolders!"
+#			fi
+#			;;
 		proxynew)
 			mkdir -p "$PENZSH_FIRST_DIR/proxy_nets"
 			read "network?What is the network on the other side of the proxy (i.e., 10.10.10.0/24)? "
-			mkdir -p "$PENZSH_FIRST_DIR/proxy_nets/$network"
-			cp $PENZSH_HOME_DIR/proxytemplate $PENZSH_FIRST_DIR/proxy_nets/$network/.penzsh_proxy_net/proxy.sh
-			chmod +x $PENZSH_FIRST_DIR/proxy_nets/$network/.penzsh_proxy_net/proxy.sh
-			$PENZSH_PROGRAM_EDITOR $PENZSH_FIRST_DIR/proxy_nets/$network/.penzsh_proxy_net/proxy.sh
+			local network_dir="$PENZSH_FIRST_DIR/proxy_nets/$(echo $network | tr '/' _)"
+			mkdir -p "$network_dir/.penzsh_proxy_net"
+			echo $network > "$network_dir/.penzsh_proxy_net/target"
+			echo net > "$network_dir/.penzsh_proxy_net/os"
+
+			local proxyscript="$network_dir/.penzsh_proxy_net/proxy.sh"
+			cp $PENZSH_HOME_DIR/proxytemplate ${proxyscript}
+			sed -i s/___TARGET___/$PENZSH_TARGET/g ${proxyscript}
+			chmod +x ${proxyscript}
+			$PENZSH_PROGRAM_EDITOR $network_dir/.penzsh_proxy_net/proxy.sh
+
 			penzsh_echo "Hopefully you're good to go!"
-			penzsh_echo "Make sure to 'cd $(realpath --relative-to=. $PENZSH_FIRST_DIR/proxy_nets/$network)' and run 'pz proxystart'!"
+			penzsh_echo "Make sure to 'cd $(realpath --relative-to=. $network_dir)' and run 'pz proxystart'!"
 			;;
 		cmds)
 			echo "Custom Commands:"
@@ -318,15 +350,17 @@ function penzsh() {
 				echo -e "\tupdate         - Updates the penzsh project, ONLY IF YOU GIT CLONED IT!"
 				echo -e ""
 
-				if [ $PENZSH_PROXY_NET && !$PENZSH_PROXY_HOST ] ; then
-					echo -e "========== PROXY NETWORK =========="
-					echo -e "\tproxyconfig    - Configures the proxy for this CIDR."
-					echo -e "\tproxyhostnew   - Creates single proxy-host directory."
-					echo -e "\tproxyhostenum  - Creates proxy-host directories after host enumeration."
-					echo -e "\tproxystart     - Starts the proxy configured for this CIDR."
-					echo -e "\t\t\t(Note: For multiple proxies, make sure to start them in the correct order.)"
-					echo -e "\tproxystop      - Stops the proxy configured for this CIDR."
-					echo -e ""
+				if ( $PENZSH_PROXY_NET ) ; then
+					if ( ! $PENZSH_PROXY_HOST ) ; then
+						echo -e "========== PROXY NETWORK =========="
+						echo -e "\tproxyconfig    - Configures the proxy for this CIDR."
+						echo -e "\tproxyhostnew   - Creates single proxy-host directory."
+						echo -e "\tproxyhostenum  - Creates proxy-host directories after host enumeration."
+						echo -e "\tproxystart     - Starts the proxy configured for this CIDR."
+						echo -e "\t\t\t(Note: For multiple proxies, make sure to start them in the correct order.)"
+#						echo -e "\tproxystop      - Stops the proxy configured for this CIDR."
+						echo -e ""
+					fi
 				fi
 
 				echo -e "========== C O M M A N D S =========="
@@ -338,9 +372,9 @@ function penzsh() {
 				echo -e " - You can use \$pzip to easily reference the target when in a PENZSH directory."
 				echo -e " - If you're having trouble with default wordlists, make sure they are installed and you've run 'updatedb'."
 				echo -e " - If you haven't already, copy ${PENZSH_CONFIG_DEFAULT} to ${PENZSH_CONFIG_LOCAL} and update with your preferences."
-				echo -e ""
-				echo -e "========== V A R I A B L E S =========="
-				env | egrep -i "^(penzsh_.*=|pz_.*=)"
+				#echo -e ""
+				#echo -e "========== V A R I A B L E S =========="
+				#env | egrep -i "^(penzsh_.*=|pz_.*=)"
 			fi
 			;;
 		esac
@@ -350,14 +384,14 @@ function penzsh() {
 			local pz_c_name=""
 			local pz_c_target=""
 
-			if [ $1 ] ; then
-				pz_c_name = $1
+			if [ $2 ] ; then
+				pz_c_name=$2
 			else
 				read "name?Project Name: "
 			fi
 
-			if [ $2 ] ; then
-				pz_c_target = $2
+			if [ $3 ] ; then
+				pz_c_target=$3
 			else
 				read "target?Project Target: "
 			fi

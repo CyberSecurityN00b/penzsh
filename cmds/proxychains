@@ -3,7 +3,7 @@ source $PENZSH_CMD_DIR/.core
 
 function penzsh_cmd_do()
 {
-	$pzcore_cmds_prefix ${@:1}
+	eval $pzcore_proxy_prefix ${@:1}
 }
 
 function penzsh_cmd_info()
