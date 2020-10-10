@@ -413,13 +413,13 @@ function penzsh() {
 			if [ $2 ] ; then
 				pz_c_name=$2
 			else
-				read "name?Project Name: "
+				read "pz_c_name?Project Name: "
 			fi
 
 			if [ $3 ] ; then
 				pz_c_target=$3
 			else
-				read "target?Project Target: "
+				read "pz_c_target?Project Target: "
 			fi
 
 			penzsh_create_host_dir "$(pwd)/$pz_c_name" "$pz_c_target"

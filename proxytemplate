@@ -30,7 +30,7 @@ pz_proxy_save()
 {
 	#1 - File
 	#2 - Data
-	echo $2 > $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxysave_$1
+	echo -n $2 > $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxysave_$1
 }
 pz_proxy_save "local_port" "$pz_proxy_local_port"
 pz_proxy_save "target" "$pz_proxy_target"
