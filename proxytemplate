@@ -41,8 +41,8 @@ proxyconf="$PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxychains.conf"
 cat << EOF > ${proxyconf}
 strict_chain
 proxy_dns
-tcp_read_time_out 15000
-tcp_connect_time_out 8000
+tcp_read_time_out 1500
+tcp_connect_time_out 800
 [ProxyList]
 EOF
 
