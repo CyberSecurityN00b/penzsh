@@ -265,7 +265,7 @@ function penzsh() {
 				penzsh_echo "Performing basic host discovery, standby..."
 				pzcore_func_require "which proxychains4" "sudo apt-get install proxychains4"
 				if [ "$?" = 0 ] ; then
-					for host in $(sudo proxychains4 -f $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxychains.conf nmap -n -sT -Pn $PENZSH_PROXY_NET_TARGET -oG - | grep "Status: Up" | awk '{print $2}') ; do
+					for host in $(sudo proxychains4 -f $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxychains.conf nmap -n -sTn -Pn $PENZSH_PROXY_NET_TARGET -oG - | grep "Status: Up" | awk '{print $2}') ; do
 						penzsh_create_host_dir "$PENZSH_PROXY_NET_DIR/$host" "$host"
 					done
 					penzsh_echo "Basic host discovery completed. NOTE: Not all hosts may have been discovered!"
@@ -309,7 +309,8 @@ function penzsh() {
 			local proxyscript="$network_dir/.penzsh_proxy_net/proxy.sh"
 			cp $PENZSH_HOME_DIR/proxytemplate ${proxyscript}
 			sed -i s/___TARGET___/$PENZSH_TARGET/g ${proxyscript}
-			chmod +x ${proxyscript}
+			chmod 700 ${proxyscript}
+			read "REPLY?You now need to configure the proxy. After configuration, 'pz config' in the network's directory will allow you to change it. Press enter to continue..."
 			$PENZSH_PROGRAM_EDITOR $network_dir/.penzsh_proxy_net/proxy.sh
 
 			penzsh_echo "Hopefully you're good to go!"
