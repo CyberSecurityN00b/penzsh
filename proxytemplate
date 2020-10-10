@@ -41,6 +41,7 @@ pz_proxy_save "method" "$pz_proxy_method"
 proxyconf="$PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxychains.conf"
 cat << EOF > ${proxyconf}
 strict_chain
+quiet_mode
 proxy_dns
 tcp_read_time_out 1500
 tcp_connect_time_out 800

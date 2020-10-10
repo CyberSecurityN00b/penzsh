@@ -8,7 +8,7 @@ function penzsh_cmd_do()
 	if [ "$?" = 0 ] ; then
 		if ( $pzcore_proxy ) ; then
 			# Command is running over a proxy, handle accordingly.
-			eval $pzcore_cmds_prefix "[cmd stuff here]"
+			pzcore_func_proxycmd "[cmd stuff here]"
 		else
 			# Command is not running over a proxy.
 		fi

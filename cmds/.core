@@ -84,16 +84,20 @@ pzcore_func_sudo()
 
 ###############################################################################
 # Proxy Specific stuff...
-pzcore_proxy=$PENZSH_PROXY_NET
-pzcore_proxy_host=$PENZSH_PROXY_HOST
+pzcore_proxy="$PENZSH_PROXY_NET"
+pzcore_proxy_host="$PENZSH_PROXY_HOST"
 pzcore_proxy_type=""
-pzcore_proxy_prefix=""
-if ( $pzcore_proxy ) ; then
-    pzcore_func_require "which proxychains4" "sudo apt-get install proxychains4"
-    if [ "$?" = 0 ] ; then
-		pzcore_proxy_prefix="proxychains4 -f $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxychains.conf "
+pzcore_func_proxycmd ()
+{
+	if ( $pzcore_proxy ) ; then
+	    pzcore_func_require "which proxychains4" "sudo apt-get install proxychains4"
+	    if [ "$?" = 0 ] ; then
+			proxychains4 -q -f $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxychains.conf ${@:1}
+		else
+			pzcore_func_warn "Unable to continue with proxied command."
+			exit
+		fi
 	else
-		pzcore_func_warn "Unable to continue with proxied command."
-		exit
+		${@:1}
 	fi
-fi
+}

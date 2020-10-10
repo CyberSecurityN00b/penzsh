@@ -7,7 +7,7 @@ function penzsh_cmd_do()
 	if [ "$?" = 0 ] ; then
 		mkdir -p $pzcore_dir_enum/nmap
 		if ( $pzcore_proxy ) ; then
-			eval $pzcore_cmds_prefix nmap -n -sT -Pn $pzcore_target -oA $pzcore_dir_enum/nmap/custom.$pzcore_timestamp ${@:1}
+			pzcore_func_proxycmd nmap -n -sT -Pn $pzcore_target -oA $pzcore_dir_enum/nmap/custom.$pzcore_timestamp ${@:1}
 		else
 			nmap $pzcore_target -oA $pzcore_dir_enum/nmap/custom.$pzcore_timestamp ${@:1}
 		fi

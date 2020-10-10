@@ -156,6 +156,26 @@ function penzsh_create_host_dir() {
 	update_current_penzsh_vars
 }
 
+function penzsh_create_proxyhost_dir() {
+	#1 - Root host directory
+	#2 - Target
+	
+	PENZSH_DIR="$1"
+	mkdir -p $PENZSH_DIR/.penzsh_proxy_host
+	echo $2 > $PENZSH_DIR/.penzsh_proxy_host/target
+	touch $PENZSH_DIR/.penzsh_proxy_host/notes
+	touch $PENZSH_DIR/.penzsh_proxy_host/todo
+	touch $PENZSH_DIR/.penzsh_proxy_host/os
+	mkdir -p $PENZSH_DIR/enum
+	mkdir -p $PENZSH_DIR/loot
+	mkdir -p $PENZSH_DIR/exploit
+	mkdir -p $PENZSH_DIR/privesc
+	mkdir -p $PENZSH_DIR/research
+	mkdir -p $PENZSH_DIR/server
+
+	update_current_penzsh_vars
+}
+
 function penzsh() {
 	local CMD=${1:-help}
 
@@ -255,18 +275,23 @@ function penzsh() {
 					pz_c_target="$target"
 				fi
 
-				penzsh_create_host_dir "$(pwd)/$pz_c_target" "$pz_c_target"
+				penzsh_create_proxyhost_dir "$(pwd)/$pz_c_target" "$pz_c_target"
 			else
 				penzsh_echo "This command is only available in immediate 'proxy_nets' subfolders!"
 			fi
 			;;
 		proxyhostenum)
 			if [[ $PENZSH_PROXY_NET && !$PENZSH_PROXY_HOST ]] ; then
+			    penzsh_echo "Note: If you see the errors 'no route to host' take note of the hosts which do not have that error. Even if they are not caught by this scan, the existence of a route (and not all routes) may indicate it is up anyway."
 				penzsh_echo "Performing basic host discovery, standby..."
 				pzcore_func_require "which proxychains4" "sudo apt-get install proxychains4"
 				if [ "$?" = 0 ] ; then
-					for host in $(sudo proxychains4 -f $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxychains.conf nmap -n -sTn -Pn $PENZSH_PROXY_NET_TARGET -oG - | grep "Status: Up" | awk '{print $2}') ; do
-						penzsh_create_host_dir "$PENZSH_PROXY_NET_DIR/$host" "$host"
+					for posshost in $(fping -g $PENZSH_PROXY_NET_TARGET | awk '{print $1}') ; do
+					    penzsh_echo "Checking $posshost..."
+						for host in $(sudo proxychains4 -f $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxychains.conf nmap -n -sT --top-ports=20 -Pn $posshost -oG - 2>/dev/null | grep "/open/tcp/" | awk '{print $2}' | sort | uniq ) ; do
+							penzsh_echo "$host is up, directory created..."
+							penzsh_create_proxyhost_dir "$PENZSH_PROXY_NET_DIR/$host" "$host"
+						done
 					done
 					penzsh_echo "Basic host discovery completed. NOTE: Not all hosts may have been discovered!"
 				else
@@ -356,7 +381,7 @@ function penzsh() {
 						echo -e "========== PROXY NETWORK =========="
 						echo -e "\tproxyconfig    - Configures the proxy for this CIDR."
 						echo -e "\tproxyhostnew   - Creates single proxy-host directory."
-						echo -e "\tproxyhostenum  - Creates proxy-host directories after host enumeration."
+						echo -e "\tproxyhostenum  - Creates proxy-host directories after host enumeration. (Checks top 20 ports.)"
 						echo -e "\tproxystart     - Starts the proxy configured for this CIDR."
 						echo -e "\t\t\t(Note: For multiple proxies, make sure to start them in the correct order.)"
 #						echo -e "\tproxystop      - Stops the proxy configured for this CIDR."
