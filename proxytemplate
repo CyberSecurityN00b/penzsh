@@ -26,7 +26,7 @@ pz_proxy_type="socks5"
 pz_proxy_method="ssh_1"
 
 ##### USE CAUTION MODIFYING ANYTHING THE BELOW ################################
-func pz_proxy_save()
+pz_proxy_save()
 {
 	#1 - File
 	#2 - Data
