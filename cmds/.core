@@ -86,11 +86,12 @@ pzcore_func_sudo()
 # Proxy Specific stuff...
 pzcore_proxy=$PENZSH_PROXY_NET
 pzcore_proxy_host=$PENZSH_PROXY_HOST
+pzcore_proxy_method=$(cat $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxysave_method 2>/dev/null)
 pzcore_proxy_type=$(cat $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxysave_type 2>/dev/null)
 pzcore_func_proxycmd ()
 {
 	if ( $pzcore_proxy ) ; then
-		if [ "$pzcore_proxy_type" = "ssh_1" ] ; then
+		if [ "$pzcore_proxy_method" = "ssh_1" ] ; then
 			pzcore_func_require "which proxychains4" "sudo apt-get install proxychains4"
 			if [ "$?" = 0 ] ; then
 				proxychains4 -q -f $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxychains.conf ${@:1}
@@ -98,10 +99,10 @@ pzcore_func_proxycmd ()
 				pzcore_func_warn "Unable to continue with proxied command."
 				exit
 			fi
-		elif [ "$pzcore_proxy_type" = "sshuttle" ] ; then
+		elif [ "$pzcore_proxy_method" = "sshuttle" ] ; then
 			${@:1}
 		else
-			pzcore_func_warn "Unsupported proxy type: $pzcore_proxy_type"
+			pzcore_func_warn "Unsupported proxy method: $pzcore_proxy_method"
 		fi
 	else
 		${@:1}
@@ -115,7 +116,7 @@ pzcore_func_proxycmd_sudo ()
 		echo ${@:1}
 	fi
 	if ( $pzcore_proxy ) ; then
-		if [ "$pzcore_proxy_type" = "ssh_1" ] ; then
+		if [ "$pzcore_proxy_method" = "ssh_1" ] ; then
 			pzcore_func_require "which proxychains4" "sudo apt-get install proxychains4"
 			if [ "$?" = 0 ] ; then
 				sudo proxychains4 -q -f $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxychains.conf ${@:1}
@@ -123,10 +124,10 @@ pzcore_func_proxycmd_sudo ()
 				pzcore_func_warn "Unable to continue with proxied command."
 				exit
 			fi
-		elif [ "$pzcore_proxy_type" = "sshuttle" ] ; then
+		elif [ "$pzcore_proxy_method" = "sshuttle" ] ; then
 			sudo ${@:1}
 		else
-			pzcore_func_warn "Unsupported proxy type: $pzcore_proxy_type"
+			pzcore_func_warn "Unsupported proxy type: $pzcore_proxy_method"
 		fi
 	else
 		sudo ${@:1}
