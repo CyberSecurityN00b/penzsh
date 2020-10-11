@@ -121,13 +121,13 @@ function pzcore_func_require()
 	
 	eval "$1 >/dev/null 2>&1"
 	if [ "$?" = 1 ] ; then
-		pzcore_echo "This command is missing a requirement!"
-		pzcore_echo "Should I run the following to fulfill this requirement?\n\t$2"
+		penzsh_echo "This command is missing a requirement!"
+		penzsh_echo "Should I run the following to fulfill this requirement?\n\t$2"
 		read "REPLY?(y/n): "
 		if [[ $REPLY =~ ^[Yy]$ ]] ; then
 			eval "$2"
 		else
-			pzcore_echo "FAILED to run command without requirement!"
+			penzsh_echo "FAILED to run command without requirement!"
 			return 1
 		fi
 	fi
