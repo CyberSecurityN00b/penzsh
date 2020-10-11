@@ -9,9 +9,9 @@ function penzsh_cmd_do()
 		read "REPLY?Enter port of service: "
 		pzcore_func_is_ssl ${pzcore_target}:$REPLY
 		if [ "$?" = 0 ] ; then
-			pzcore_func_proxycmd cewl ${@:1} -w $pzcore_dir_enum/cewl/http-$REPLY-$pzcore_timestamp.cewl http://${pzcore_target}:$REPLY
+			pzcore_func_proxycmd cewl ${@:1} -w $pzcore_dir_enum/wordlists/cewl-http-$REPLY-$pzcore_timestamp.txt http://${pzcore_target}:$REPLY
 		else
-			pzcore_func_proxycmd cewl ${@:1} -w $pzcore_dir_enum/cewl/https-$REPLY-$pzcore_timestamp.cewl https://${pzcore_target}:$REPLY
+			pzcore_func_proxycmd cewl ${@:1} -w $pzcore_dir_enum/wordlists/cewl-https-$REPLY-$pzcore_timestamp.txt https://${pzcore_target}:$REPLY
 		fi
 	fi
 }

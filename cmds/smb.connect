@@ -18,7 +18,7 @@ function penzsh_cmd_do()
 		fi
 		echo "Connecting to Share $pz_cmd_share..."
 		cd $pzcore_dir_loot/smb
-		smbclient \\\\$pzip\\$pz_cmd_share $pz_cmd_arguments
+		pzcore_func_proxycmd smbclient \\\\$pzip\\$pz_cmd_share $pz_cmd_arguments
 		cd -
 	fi
 }
