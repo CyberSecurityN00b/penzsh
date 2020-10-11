@@ -240,7 +240,7 @@ function penzsh() {
 			fi
 			;;
 		update)
-			git -C $PENZSH_HOME_DIR/.git pull
+			git -C $PENZSH_HOME_DIR pull
 			penzsh_echo "If successful, you should have any updates. Please restart your shell!"
 			;;
 		info)
