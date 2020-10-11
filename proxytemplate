@@ -22,6 +22,7 @@ pz_proxy_type="socks5"
 # PROMPT: Which method should be used to create the proxy?
 # OPTIONS:
 #	ssh_1 - Connects to ssh to create a proxy
+#       sshuttle - Uses sshuttle 
 #	custom - Build your custom proxy commands below
 pz_proxy_method="ssh_1"
 
@@ -62,6 +63,10 @@ case $pz_proxy_method in
 		
 		# proxychains
 		echo -e "$pz_proxy_type\t127.0.0.1\t$pz_proxy_local_port" >> ${proxyconf}
+		;;
+	sshuttle)
+		echo "Password: $pz_proxy_password"
+		sshuttle -r $pz_proxy_username@$pz_proxy_target $PENZSH_PROXY_NET_TARGET
 		;;
 	*)
 		echo 'WARNING! Unknown proxy method, no proxy built!'

@@ -324,6 +324,16 @@ function penzsh() {
 #			fi
 #			;;
 		proxynew)
+			pzcore_func_require "which proxychains4" "sudo apt-get install proxychains4"
+			if [ "$?" != 0 ] ; then
+				penzsh_echo "Unable to continue"
+				exit
+			fi
+			pzcore_func_require "which sshuttle" "sudo apt-get install sshuttle"
+			if [ "$?" != 0 ] ; then
+				penzsh_echo "Unable to continue"
+				exit
+			fi
 			mkdir -p "$PENZSH_FIRST_DIR/proxy_nets"
 			read "network?What is the network on the other side of the proxy (i.e., 10.10.10.0/24)? "
 			local network_dir="$PENZSH_FIRST_DIR/proxy_nets/$(echo $network | tr '/' _)"
