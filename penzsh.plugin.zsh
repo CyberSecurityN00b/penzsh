@@ -102,7 +102,7 @@ function update_current_penzsh_vars() {
 		fi
 
 		export PENZSH_RHOST=${PENZSH_TARGET}
-		export PENZSH_LHOST=${$(ip route get $PENZSH_RHOST 2>/dev/null | awk '{print $7}'):-0.0.0.0}
+		export PENZSH_LHOST=${$(ip route get $PENZSH_FIRST_TARGET | grep -oP "(?<=src )(.*)(?= uid)"):-0.0.0.0}
 		export pzip=$PENZSH_TARGET
 		fc -p $PENZSH_DIR_META/history
 	fi
