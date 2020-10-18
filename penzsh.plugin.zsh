@@ -185,7 +185,7 @@ function penzsh() {
 			penzsh_echo "Currently in a penzsh project for $PENZSH_TARGET!"
 			penzsh_echo "penzsh does not support sub-projects!"
 			;;
-		flag)I
+		flag)
 			case $2 in
 			os:win*)
 				echo windows > $PENZSH_DIR_META/os
