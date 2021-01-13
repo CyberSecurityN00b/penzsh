@@ -205,6 +205,13 @@ function penzsh() {
 			esac
 			update_current_penzsh_vars
 			;;
+		host)
+			if [ "$#" -eq 1 ] ; then
+				penzsh_echo "You must provide one or more domains, separated by spaces!"
+			else
+				sudo echo -e "\n$PENZSH_TARGET\t${@:2} # Added by penzsh on $(date)">> /etc/hosts
+			fi
+			;;
 		note)
 			echo "$(date -u +\[%Y-%b-%d\ %T\ UTC\]) > ${@:2}" >> $PENZSH_DIR_META/notes
 			;;
@@ -213,8 +220,7 @@ function penzsh() {
 			;;
 		todo)
 			# fix for empty lines if someone just does `pz todo`
-			if [ "$#" -ne 1 ]
-			then
+			if [ "$#" -ne 1 ] ; then
 				echo "${@:2}" >> $PENZSH_DIR_META/todo
 			fi
 			;;
@@ -378,6 +384,7 @@ function penzsh() {
 				echo -e "\t\tos:freebsd - Flag the target as a FreeBSD machine."
 				echo -e "\t\tos:linux   - Flag the target as a Linux machine."
 				echo -e "\t\tos:windows - Flag the target as a Windows machine."
+				echo -e "\thost           - Adds target to /etc/hosts with domains."
 				echo -e "\tnote           - Save a note for later"
 				echo -e "\tnotes          - Read your notes for this target"
 				echo -e "\tproxynew       - Creates a new proxy"
