@@ -88,6 +88,7 @@ pzcore_proxy=$PENZSH_PROXY_NET
 pzcore_proxy_host=$PENZSH_PROXY_HOST
 pzcore_proxy_method=$(cat $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxysave_method 2>/dev/null)
 pzcore_proxy_type=$(cat $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxysave_type 2>/dev/null)
+pzcore_proxy_local_port=$(cat $PENZSH_PROXY_NET_DIR/.penzsh_proxy_net/proxysave_local_port 2>/dev/null)
 pzcore_func_proxycmd ()
 {
 	if ( $pzcore_proxy ) ; then
