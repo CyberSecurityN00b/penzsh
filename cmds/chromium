@@ -1,0 +1,22 @@
+#!/bin/bash
+source $PENZSH_CMD_DIR/.core
+
+function penzsh_cmd_do()
+{
+	# TODO: Update [tool] as needed
+	pzcore_func_require "which chromium" "sudo apt-get install chromium"
+	if [ "$?" = 0 ] ; then
+		if ( $pzcore_proxy ) ; then
+			# Command is running over a proxy, handle accordingly.
+			chromium --proxy-server="$pzcore_proxy_type://127.0.0.1:$pzcore_proxy_local_port"
+		else
+			# Command is not running over a proxy.
+			chromium
+		fi
+	fi
+}
+
+function penzsh_cmd_info()
+{
+	echo -e "Opens up chromium. If in a proxies host, handles proxy connection."
+}
